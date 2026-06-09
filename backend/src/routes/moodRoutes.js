@@ -3,6 +3,9 @@ const express = require('express');
 const router = express.Router();
 const { Mood } = require('../../models');
 const { authenticate } = require('../middlewares/auth');
+const NotificationService = require('../services/NotificationService');
+
+const ALARMING_MOODS = new Set(['sad', 'anxious', 'frustrated']);
 
 // Save a mood check-in
 router.post('/', authenticate, async (req, res) => {
@@ -18,6 +21,9 @@ router.post('/', authenticate, async (req, res) => {
       recordedAt: new Date(),
     });
 
+    if (ALARMING_MOODS.has(mood)) {
+      NotificationService.sendMoodAlert(req.user.id, { mood }).catch(() => {});
+    }
     res.json({ success: true, entry });
   } catch (err) {
     console.error('MOOD ERROR:', err.message);

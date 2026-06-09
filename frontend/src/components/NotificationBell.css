@@ -1,0 +1,151 @@
+.nb-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.nb-btn {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  position: relative;
+  padding: 0.25rem;
+  line-height: 1;
+}
+
+.nb-badge {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+  background: #e53935;
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+  pointer-events: none;
+}
+
+.nb-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 340px;
+  max-height: 440px;
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16);
+  border: 1px solid #ede9f7;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 2000;
+}
+
+.nb-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1rem 0.7rem;
+  border-bottom: 1px solid #f0eafa;
+}
+
+.nb-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #2d1f3d;
+}
+
+.nb-mark-all {
+  background: none;
+  border: none;
+  font-size: 0.8rem;
+  color: #7b5ea7;
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0;
+}
+
+.nb-mark-all:hover {
+  text-decoration: underline;
+}
+
+.nb-empty {
+  padding: 1.5rem 1rem;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.nb-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  max-height: 370px;
+}
+
+.nb-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #f5f3fa;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.nb-item:last-child {
+  border-bottom: none;
+}
+
+.nb-item--unread {
+  background: #faf7ff;
+}
+
+.nb-item--read {
+  background: white;
+  cursor: default;
+}
+
+.nb-item--unread:hover {
+  background: #f0eafa;
+}
+
+.nb-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.nb-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.nb-msg {
+  font-size: 0.875rem;
+  color: #2d1f3d;
+  margin: 0 0 0.2rem 0;
+  line-height: 1.4;
+}
+
+.nb-time {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.nb-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #7b5ea7;
+  flex-shrink: 0;
+  margin-top: 5px;
+}

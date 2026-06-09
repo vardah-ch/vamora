@@ -4,6 +4,7 @@ const router = express.Router();
 const { Op } = require('sequelize');
 const db = require('../../models');
 const { authenticate, authorize } = require('../middlewares/auth');
+const NotificationService = require('../services/NotificationService');
 
 const doctorOnly = [authenticate, authorize('doctor')];
 
@@ -250,6 +251,7 @@ router.post('/patients/:id/appointments', ...doctorOnly, async (req, res) => {
       doctorId: req.user.id,
       title, doctorName, appointmentType, appointmentDate, notes
     });
+    NotificationService.sendCheckupNotifications(patient.userId, req.user.id, appointmentDate, title).catch(() => {});
     res.status(201).json({ status: 'success', data: appt });
   } catch (err) {
     res.status(500).json({ status: 'error', message: err.message });
@@ -283,6 +285,7 @@ router.post('/patients/:id/medications', ...doctorOnly, async (req, res) => {
       medicationName, dosage, frequency, timing,
       startDate: startDate || null, endDate: endDate || null, notes
     });
+    NotificationService.sendMedicationNotification(patient.userId, { medicationName, dosage, frequency, doctorUserId: req.user.id }).catch(() => {});
     res.status(201).json({ status: 'success', data: med });
   } catch (err) {
     res.status(500).json({ status: 'error', message: err.message });

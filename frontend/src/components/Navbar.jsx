@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, LogOut, Brain, Heart } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import NotificationBell from './NotificationBell';
 import './Navbar.css';
 
 const Navbar = () => {
@@ -46,6 +47,7 @@ const Navbar = () => {
       <div className="navbar-right">
         {user && (
           <>
+            <NotificationBell />
             <div className="user-badge">
               <span className="user-name">{user.profile?.name || user.email}</span>
               <span className="user-role">{user.role}</span>
