@@ -40,6 +40,13 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 'memory',
     },
+    uploadedByUserId: { type: DataTypes.INTEGER, allowNull: true },
+    mimeType: { type: DataTypes.STRING(64), allowNull: true },
+    voiceNoteMime: { type: DataTypes.STRING(64), allowNull: true },
+    voiceUploadedByUserId: { type: DataTypes.INTEGER, allowNull: true },
+    patientConfirmed: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
+    deletedAt: { type: DataTypes.DATE, allowNull: true },
+    deletedByUserId: { type: DataTypes.INTEGER, allowNull: true },
   }, {
     sequelize,
     modelName: 'Photo',

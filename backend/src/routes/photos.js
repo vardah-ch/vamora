@@ -1,65 +1,44 @@
- 'use strict';
+'use strict';
 const express = require('express');
 const router = express.Router();
-const upload = require('../middlewares/upload');
-const { Photo } = require('../../models');
-const { authenticate } = require('../middlewares/auth'); // ✅ correct name
+const { authenticate, authorize } = require('../middlewares/auth');
+const { imageUpload, audioUpload } = require('../middlewares/upload');
+const lib = require('../services/memoryLibrary');
+const { parseUuid } = require('../utils/http');
 
-// Upload photo
-router.post('/', authenticate, upload.single('photo'), async (req, res) => {
-  try {
-    if (!req.body.caption || req.body.caption.trim() === '') {
-      return res.status(400).json({ error: 'Caption is required.' });
-    }
-    const photo = await Photo.create({
-      patientId:    req.user.id,
-       filename: `/uploads/photos/${req.file.filename}`.replace(/\\/g, '/'),
-      originalName: req.file.originalname,
-      caption:      req.body.caption.trim(),
-      takenAt:      req.body.takenAt || new Date(),
-    });
-    res.json({ success: true, photo });
- } catch (err) {
-    console.error('UPLOAD ERROR:', err.message);
-    res.status(500).json({ error: err.message });
-  }
-});
-// Get all photosnode
-// Get all photos
-router.get('/', authenticate, async (req, res) => {
-  try {
-    const photos = await Photo.findAll({
-      where: { patientId: req.user.id },
-      order: [['takenAt', 'DESC']]
-    });
-    res.json(photos);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+/**
+ * Patient's own photo library. Base: /api/v1/photos
+ * Caregiver access to a patient's photos lives under /api/v1/caregiver.
+ * Voice notes and deletion work for any authorised role (checked per photo).
+ */
+const patientOnly = [authenticate, authorize('patient')];
+
+router.get('/', ...patientOnly, async (req, res) => {
+  res.json(await lib.listPhotos(req, req.user.id));
 });
 
-// Add optional voice note to a photo
-router.post('/:id/voice', authenticate, upload.single('voice'), async (req, res) => {
-  try {
-    const photo = await Photo.findOne({ 
-      where: { id: req.params.id, patientId: req.user.id } 
-    });
-    if (!photo) return res.status(404).json({ error: 'Photo not found.' });
-    await photo.update({ voiceNoteUrl: `/uploads/photos/${req.file.filename}` });
-    res.json({ success: true, voiceNoteUrl: photo.voiceNoteUrl });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+router.post('/', ...patientOnly, ...imageUpload('photo'), async (req, res) => {
+  res.status(201).json({ success: true, photo: await lib.addPhoto(req, req.user.id) });
 });
 
-// Delete a photo
+router.get('/removed', ...patientOnly, async (req, res) => {
+  res.json(await lib.listRemovedPhotos(req));
+});
+
+router.post('/:id/restore', ...patientOnly, async (req, res) => {
+  res.json(await lib.restorePhoto(req, parseUuid(req.params.id)));
+});
+
+router.post('/:id/confirm', ...patientOnly, async (req, res) => {
+  res.json(await lib.confirmPhoto(req, parseUuid(req.params.id)));
+});
+
+router.post('/:id/voice', authenticate, ...audioUpload('voice'), async (req, res) => {
+  res.json(await lib.addVoiceNote(req, parseUuid(req.params.id)));
+});
+
 router.delete('/:id', authenticate, async (req, res) => {
-  try {
-    await Photo.destroy({ where: { id: req.params.id, patientId: req.user.id } });
-    res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  res.json(await lib.removePhoto(req, parseUuid(req.params.id)));
 });
 
 module.exports = router;

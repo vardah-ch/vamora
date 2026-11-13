@@ -13,7 +13,10 @@ module.exports = (sequelize, DataTypes) => {
     id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
     patientId: { type: DataTypes.INTEGER, allowNull: false },
     caregiverId: { type: DataTypes.INTEGER, allowNull: false },
-    note: { type: DataTypes.TEXT, allowNull: false }
+    note: { type: DataTypes.TEXT, allowNull: false },
+    category: { type: DataTypes.STRING(32), allowNull: false, defaultValue: 'general' },
+    retractedAt: { type: DataTypes.DATE, allowNull: true },
+    retractedReason: { type: DataTypes.STRING(300), allowNull: true }
   }, {
     sequelize,
     modelName: 'CareNote',

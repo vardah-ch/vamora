@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ quiet: true });
 
 module.exports = {
   development: {
@@ -19,7 +19,7 @@ module.exports = {
   test: {
     username: process.env.DB_USER || 'vamora_user',
     password: process.env.DB_PASSWORD || 'vamora_secure_password_2026',
-    database: `${process.env.DB_NAME}_test` || 'vamora_db_test',
+    database: process.env.DB_NAME_TEST || (process.env.DB_NAME ? `${process.env.DB_NAME}_test` : 'vamora_db_test'),
     host: process.env.DB_HOST || '127.0.0.1',
     port: process.env.DB_PORT || 5432,
     dialect: 'postgres',

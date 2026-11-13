@@ -1,286 +1,172 @@
-const db = require('../../models');
-const { generateAccessToken, generateRefreshToken } = require('../config/jwt');
+'use strict';
 const crypto = require('crypto');
+const bcrypt = require('bcryptjs');
+const validator = require('validator');
+const db = require('../../models');
+const { generateAccessToken, generateRefreshToken, verifyRefreshToken } = require('../config/jwt');
+const { HttpError, conflict } = require('../utils/http');
+const audit = require('./auditService');
 
 /**
- * Authentication Service
- * Contains business logic for authentication operations
+ * Authentication service.
+ *
+ * Audit fixes:
+ *  S1 – public registration is limited to 'patient' and 'caregiver'. Doctor and
+ *       administrator accounts can only be created by a super-admin. A
+ *       self-registered caregiver gets NO patient access until a patient
+ *       approves a request (or a clinician links them).
+ *  B3 – locked doctor/caregiver accounts cannot sign in.
+ *  S7 – logout and password change revoke all tokens (tokenVersion).
+ *  S8 – password-reset tokens are stored only as SHA-256 hashes and are never
+ *       returned by the API (unless DEV_EXPOSE_RESET_TOKEN=true in development).
  */
 
-/**
- * Register a new user
- * @param {Object} userData - User registration data
- * @returns {Object} Created user and tokens
- */
-const register = async (userData) => {
-  const { email, password, role, name, dateOfBirth, phone, specialization, licenseNumber } = userData;
+const SELF_REGISTRABLE_ROLES = ['patient', 'caregiver'];
+const unauthorized = (m) => new HttpError(401, m, 'unauthorized');
+let _dummy;
+const dummyHash = () => (_dummy = _dummy || bcrypt.hashSync('vamora-timing-equaliser', 12));
+const hashToken = (t) => crypto.createHash('sha256').update(t).digest('hex');
 
-  // Check if user already exists
-  const existingUser = await db.User.findOne({ where: { email } });
+const PROFILE_INCLUDES = () => [
+  { model: db.Patient, as: 'patientProfile' },
+  { model: db.Caregiver, as: 'caregiverProfile' },
+  { model: db.Doctor, as: 'doctorProfile' }
+];
 
-  if (existingUser) {
-    throw new Error('Email is already registered');
+function profileFor(user) {
+  if (user.role === 'patient') return user.patientProfile || null;
+  if (user.role === 'caregiver') return user.caregiverProfile || null;
+  if (user.role === 'doctor') return user.doctorProfile || null;
+  return null;
+}
+
+function publicProfile(user) {
+  const profile = profileFor(user);
+  if (!profile) return null;
+  const p = profile.toJSON();
+  // Never send representative evidence notes or internal fields to the client by default.
+  delete p.representativeBasis;
+  return p;
+}
+
+function issueTokens(user) {
+  return { accessToken: generateAccessToken(user), refreshToken: generateRefreshToken(user) };
+}
+
+const register = async ({ email, password, role, name, dateOfBirth, phone }) => {
+  const finalRole = role || 'patient';
+  if (!SELF_REGISTRABLE_ROLES.includes(finalRole)) {
+    throw new HttpError(403, 'Doctor and administrator accounts are created by the system administrator.', 'role_not_self_registrable');
   }
-
-  // Start transaction
-  const transaction = await db.sequelize.transaction();
-
-  try {
-    // Create user
-    const user = await db.User.create({
-      email,
-      password, // Will be hashed by model hook
-      role: role || 'patient'
-    }, { transaction });
-
-    // Create role-specific profile record
-    if (user.role === 'patient') {
-      await db.Patient.create({
-        userId: user.id,
-        name,
-        dateOfBirth: dateOfBirth || null
-      }, { transaction });
-    } else if (user.role === 'caregiver') {
-      await db.Caregiver.create({
-        userId: user.id,
-        name,
-        phone: phone || null
-      }, { transaction });
-    } else if (user.role === 'doctor') {
-      await db.Doctor.create({
-        userId: user.id,
-        name,
-        specialization: specialization || null,
-        licenseNumber: licenseNumber || null
-      }, { transaction });
+  const normalizedEmail = String(email).trim().toLowerCase();
+  if (await db.User.findOne({ where: { email: normalizedEmail } })) {
+    throw conflict('Email is already registered');
+  }
+  const user = await db.sequelize.transaction(async (transaction) => {
+    const u = await db.User.create({ email: normalizedEmail, password, role: finalRole }, { transaction });
+    if (finalRole === 'patient') {
+      await db.Patient.create({ userId: u.id, name, dateOfBirth: dateOfBirth || null }, { transaction });
+    } else {
+      await db.Caregiver.create({ userId: u.id, name, phone: phone || null }, { transaction });
     }
-
-    await transaction.commit();
-
-    // Generate tokens
-    const accessToken = generateAccessToken({ id: user.id, email: user.email, role: user.role });
-    const refreshToken = generateRefreshToken({ id: user.id, email: user.email });
-
-    // Return user data without password
-    const userResponse = user.toSafeObject();
-
-    return {
-      user: userResponse,
-      accessToken,
-      refreshToken
-    };
-  } catch (error) {
-    await transaction.rollback();
-    throw error;
-  }
+    return u;
+  });
+  const full = await db.User.findByPk(user.id, { include: PROFILE_INCLUDES() });
+  return { user: { ...full.toSafeObject(), profile: publicProfile(full) }, ...issueTokens(full) };
 };
 
-/**
- * Login user
- * @param {String} email - User email
- * @param {String} password - User password
- * @returns {Object} User and tokens
- */
-const login = async (email, password) => {
-  // Find user by email
-  const user = await db.User.findOne({
-    where: { email },
-    include: [
-      { model: db.Patient, as: 'patientProfile' },
-      { model: db.Caregiver, as: 'caregiverProfile' },
-      { model: db.Doctor, as: 'doctorProfile' }
-    ]
-  });
-
+const login = async (email, password, req) => {
+  const normalizedEmail = String(email || '').trim().toLowerCase();
+  let user = await db.User.findOne({ where: { email: normalizedEmail }, include: PROFILE_INCLUDES() });
   if (!user) {
-    throw new Error('Invalid email or password');
+    // Accounts created before 2026-11 were stored with validator.normalizeEmail()
+    // (which e.g. strips dots from Gmail addresses). Try that form too.
+    const legacy = validator.normalizeEmail(normalizedEmail);
+    if (legacy && legacy !== normalizedEmail) {
+      user = await db.User.findOne({ where: { email: legacy }, include: PROFILE_INCLUDES() });
+    }
   }
 
-  // Check if account is active
+  // Constant-ish work whether or not the account exists (limits user enumeration by timing).
+  const ok = user ? await user.comparePassword(String(password || '')) : await bcrypt.compare(String(password || ''), dummyHash());
+  if (!user || !ok) {
+    await audit.record(null, { actorUserId: user?.id || null, action: 'auth.login', outcome: 'denied', reason: 'bad credentials', requestId: req?.id });
+    throw unauthorized('Invalid email or password');
+  }
   if (!user.isActive) {
-    throw new Error('Your account has been deactivated. Please contact support.');
+    await audit.record(null, { actorUserId: user.id, actorRole: user.role, action: 'auth.login', outcome: 'denied', reason: 'inactive' });
+    throw unauthorized('Your account has been deactivated. Please contact support.');
   }
-
-  // Verify password
-  const isPasswordValid = await user.comparePassword(password);
-
-  if (!isPasswordValid) {
-    throw new Error('Invalid email or password');
+  if (user.doctorProfile?.isLocked || user.caregiverProfile?.isLocked) {
+    await audit.record(null, { actorUserId: user.id, actorRole: user.role, action: 'auth.login', outcome: 'denied', reason: 'locked' });
+    throw unauthorized('This account is locked. Please contact the administrator.');
   }
-
-  // Generate tokens
-  const accessToken = generateAccessToken({
-    id: user.id,
-    email: user.email,
-    role: user.role
-  });
-  const refreshToken = generateRefreshToken({
-    id: user.id,
-    email: user.email
-  });
-
-  // Resolve role-specific profile
-  let profile = null;
-  if (user.role === 'patient') profile = user.patientProfile;
-  else if (user.role === 'caregiver') profile = user.caregiverProfile;
-  else if (user.role === 'doctor') profile = user.doctorProfile;
-
-  const userResponse = { ...user.toSafeObject(), profile };
-
-  return {
-    user: userResponse,
-    accessToken,
-    refreshToken
-  };
+  await audit.record(null, { actorUserId: user.id, actorRole: user.role, action: 'auth.login', outcome: 'allowed' });
+  return { user: { ...user.toSafeObject(), profile: publicProfile(user) }, ...issueTokens(user) };
 };
 
-/**
- * Get current user profile
- * @param {Number} userId - User ID
- * @returns {Object} User profile
- */
 const getCurrentUser = async (userId) => {
-  const user = await db.User.findByPk(userId, {
-    attributes: { exclude: ['password'] },
-    include: [
-      { model: db.Patient, as: 'patientProfile' },
-      { model: db.Caregiver, as: 'caregiverProfile' },
-      { model: db.Doctor, as: 'doctorProfile' }
-    ]
-  });
-
-  if (!user) {
-    throw new Error('User not found');
-  }
-
-  let profile = null;
-  if (user.role === 'patient') profile = user.patientProfile;
-  else if (user.role === 'caregiver') profile = user.caregiverProfile;
-  else if (user.role === 'doctor') profile = user.doctorProfile;
-
-  return { ...user.toJSON(), profile };
+  const user = await db.User.findByPk(userId, { attributes: { exclude: ['password'] }, include: PROFILE_INCLUDES() });
+  if (!user) throw new HttpError(404, 'User not found');
+  return { ...user.toSafeObject(), profile: publicProfile(user) };
 };
 
-/**
- * Refresh access token
- * @param {String} refreshToken - Refresh token
- * @returns {Object} New access token
- */
 const refreshAccessToken = async (refreshToken) => {
-  const { verifyRefreshToken } = require('../config/jwt');
-
+  let decoded;
   try {
-    const decoded = verifyRefreshToken(refreshToken);
-
-    // Verify user still exists and is active
-    const user = await db.User.findByPk(decoded.id);
-
-    if (!user || !user.isActive) {
-      throw new Error('User not found or inactive');
-    }
-
-    // Generate new access token
-    const newAccessToken = generateAccessToken({
-      id: user.id,
-      email: user.email,
-      role: user.role
-    });
-
-    return { accessToken: newAccessToken };
-  } catch (error) {
-    throw new Error('Invalid or expired refresh token');
+    decoded = verifyRefreshToken(refreshToken);
+  } catch {
+    throw unauthorized('Invalid or expired refresh token');
   }
+  const user = await db.User.findByPk(decoded.id, { include: PROFILE_INCLUDES() });
+  if (!user || !user.isActive || (user.tokenVersion || 0) !== (decoded.tv || 0) ||
+      user.doctorProfile?.isLocked || user.caregiverProfile?.isLocked) {
+    throw unauthorized('Invalid or expired refresh token');
+  }
+  return { accessToken: generateAccessToken(user) };
 };
 
-/**
- * Request password reset
- * @param {String} email - User email
- * @returns {Object} Reset token (in production, send via email)
- */
+/** Server-side logout: invalidates every access and refresh token of the user. */
+const logout = async (user) => {
+  await db.User.increment('tokenVersion', { where: { id: user.id } });
+};
+
 const requestPasswordReset = async (email) => {
-  // Find user by email
-  const user = await db.User.findOne({ where: { email } });
+  const normalizedEmail = String(email).trim().toLowerCase();
+  const generic = { message: 'If the email exists, a reset link will be sent.' };
+  const user = await db.User.findOne({ where: { email: normalizedEmail } });
+  if (!user) return generic;
 
-  if (!user) {
-    // Don't reveal if email exists for security
-    return { message: 'If the email exists, a reset link will be sent.' };
-  }
-
-  // Generate reset token (32 random bytes as hex)
   const resetToken = crypto.randomBytes(32).toString('hex');
-
-  // Token expires in 1 hour
-  const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
-
-  // Invalidate any existing unused tokens for this email
-  await db.PasswordReset.update(
-    { used: true },
-    { where: { email, used: false } }
-  );
-
-  // Create new password reset record
+  await db.PasswordReset.update({ used: true }, { where: { email: normalizedEmail, used: false } });
   await db.PasswordReset.create({
-    email,
-    token: resetToken,
-    expiresAt,
+    email: normalizedEmail,
+    token: hashToken(resetToken),
+    expiresAt: new Date(Date.now() + 30 * 60 * 1000),
     used: false
   });
-
-  // In production, send email with reset link here
-  // For now, return the token (ONLY FOR DEV/TESTING)
-  return {
-    message: 'If the email exists, a reset link will be sent.',
-    // Remove this in production - only for testing
-    resetToken: resetToken
-  };
+  // There is no email transport yet (documented limitation). The raw token is
+  // only exposed when a developer explicitly opts in on a non-production server.
+  if (process.env.NODE_ENV !== 'production' && process.env.DEV_EXPOSE_RESET_TOKEN === 'true') {
+    return { ...generic, resetToken };
+  }
+  return generic;
 };
 
-/**
- * Reset password using token
- * @param {String} token - Reset token
- * @param {String} newPassword - New password
- * @returns {Object} Success message
- */
 const resetPassword = async (token, newPassword) => {
-  // Find valid reset token
-  const passwordReset = await db.PasswordReset.findOne({
-    where: { token, used: false }
+  const record = await db.PasswordReset.findOne({ where: { token: hashToken(String(token)), used: false } });
+  if (!record || record.isExpired()) throw new HttpError(400, 'Invalid or expired reset token');
+  const user = await db.User.findOne({ where: { email: record.email } });
+  if (!user) throw new HttpError(400, 'Invalid or expired reset token');
+  await db.sequelize.transaction(async (transaction) => {
+    user.password = newPassword;
+    user.tokenVersion = (user.tokenVersion || 0) + 1;
+    await user.save({ transaction });
+    record.used = true;
+    await record.save({ transaction });
   });
-
-  if (!passwordReset) {
-    throw new Error('Invalid or expired reset token');
-  }
-
-  // Check if token has expired
-  if (passwordReset.isExpired()) {
-    throw new Error('Reset token has expired');
-  }
-
-  // Find user by email
-  const user = await db.User.findOne({
-    where: { email: passwordReset.email }
-  });
-
-  if (!user) {
-    throw new Error('User not found');
-  }
-
-  // Update user password (will be hashed by model hook)
-  user.password = newPassword;
-  await user.save();
-
-  // Mark token as used
-  passwordReset.used = true;
-  await passwordReset.save();
-
+  await audit.record(null, { actorUserId: user.id, actorRole: user.role, action: 'auth.password_reset', outcome: 'allowed' });
   return { message: 'Password reset successful' };
 };
 
-module.exports = {
-  register,
-  login,
-  getCurrentUser,
-  refreshAccessToken,
-  requestPasswordReset,
-  resetPassword
-};
+module.exports = { register, login, getCurrentUser, refreshAccessToken, logout, requestPasswordReset, resetPassword, SELF_REGISTRABLE_ROLES };

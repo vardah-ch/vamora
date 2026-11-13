@@ -86,7 +86,6 @@ const updateProfile = async (userId, updateData) => {
 
       if (updateData.name) profileUpdates.name = updateData.name;
       if (updateData.phone) profileUpdates.phone = updateData.phone;
-      if (updateData.relationship) profileUpdates.relationship = updateData.relationship;
 
       if (Object.keys(profileUpdates).length > 0) {
         await user.caregiverProfile.update(profileUpdates, { transaction });
@@ -126,6 +125,7 @@ const changePassword = async (userId, currentPassword, newPassword) => {
 
   // Update password (will be hashed by model hook)
   user.password = newPassword;
+  user.tokenVersion = (user.tokenVersion || 0) + 1; // revoke other sessions
   await user.save();
 
   return true;

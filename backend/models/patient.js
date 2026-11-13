@@ -133,7 +133,21 @@ module.exports = (sequelize, DataTypes) => {
       references: { model: 'users', key: 'id' },
       onUpdate: 'CASCADE',
       onDelete: 'SET NULL'
-    }
+    },
+    // 'self' / 'supported' = the patient decides (supported: with help).
+    // 'representative' = a clinician recorded that a named person holds decision
+    // authority. VAMORA cannot verify legal authority; representativeBasis records
+    // the evidence the clinician relied on.
+    consentMode: {
+      type: DataTypes.ENUM('self', 'supported', 'representative'),
+      allowNull: false,
+      defaultValue: 'self'
+    },
+    representativeUserId: { type: DataTypes.INTEGER, allowNull: true },
+    representativeBasis: { type: DataTypes.TEXT, allowNull: true },
+    consentModeRecordedBy: { type: DataTypes.INTEGER, allowNull: true },
+    consentModeRecordedAt: { type: DataTypes.DATE, allowNull: true },
+    preferences: { type: DataTypes.JSONB, allowNull: false, defaultValue: {} }
   }, {
     sequelize,
     modelName: 'Patient',

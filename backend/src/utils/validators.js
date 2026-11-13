@@ -10,6 +10,7 @@ const validate = (req, res, next) => {
     return res.status(400).json({
       status: 'error',
       message: 'Validation failed',
+      error: errors.array()[0]?.msg,
       errors: errors.array().map(err => ({
         field: err.path,
         message: err.msg
@@ -28,18 +29,18 @@ const registerValidation = [
     .trim()
     .isEmail()
     .withMessage('Please provide a valid email address')
-    .normalizeEmail(),
+    .customSanitizer(v => String(v).toLowerCase()),
 
   body('password')
-    .isLength({ min: 6 })
-    .withMessage('Password must be at least 6 characters long')
+    .isLength({ min: 8, max: 100 })
+    .withMessage('Password must be at least 8 characters long')
     .matches(/\d/)
     .withMessage('Password must contain at least one number'),
 
   body('role')
     .optional()
-    .isIn(['patient', 'caregiver', 'admin', 'doctor'])
-    .withMessage('Role must be patient, caregiver, admin, or doctor'),
+    .isIn(['patient', 'caregiver'])
+    .withMessage('You can register as a patient or a caregiver. Doctor accounts are created by the administrator.'),
 
   body('name')
     .trim()
@@ -57,9 +58,10 @@ const loginValidation = [
     .trim()
     .isEmail()
     .withMessage('Please provide a valid email address')
-    .normalizeEmail(),
+    .customSanitizer(v => String(v).toLowerCase()),
 
   body('password')
+    .isString()
     .notEmpty()
     .withMessage('Password is required'),
 
@@ -81,7 +83,7 @@ const updateProfileValidation = [
     .trim()
     .isEmail()
     .withMessage('Please provide a valid email address')
-    .normalizeEmail(),
+    .customSanitizer(v => String(v).toLowerCase()),
 
   body('phone')
     .optional()
@@ -101,8 +103,8 @@ const changePasswordValidation = [
     .withMessage('Current password is required'),
 
   body('newPassword')
-    .isLength({ min: 6 })
-    .withMessage('New password must be at least 6 characters long')
+    .isLength({ min: 8, max: 100 })
+    .withMessage('New password must be at least 8 characters long')
     .matches(/\d/)
     .withMessage('New password must contain at least one number'),
 

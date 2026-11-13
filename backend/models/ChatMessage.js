@@ -25,7 +25,8 @@ module.exports = (sequelize, DataTypes) => {
     content: {
       type: DataTypes.TEXT,
       allowNull: false
-    }
+    },
+    metadata: { type: DataTypes.JSONB, allowNull: true }
   }, {
     sequelize,
     modelName: 'ChatMessage',

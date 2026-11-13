@@ -39,3 +39,6 @@ coverage/
 tmp/
 temp/
 *.tmp
+
+# Local embedding model cache (downloaded on first use)
+.model-cache/

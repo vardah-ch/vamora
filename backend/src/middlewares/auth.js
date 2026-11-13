@@ -1,125 +1,56 @@
+'use strict';
 const { verifyAccessToken } = require('../config/jwt');
 const db = require('../../models');
 
 /**
- * Middleware to verify JWT token and authenticate user
+ * Authenticate a request with a Bearer access token.
+ * Rejects: missing/invalid/expired tokens, refresh tokens used as access
+ * tokens, revoked tokens (tokenVersion mismatch), inactive accounts, and
+ * locked doctor/caregiver accounts (audit B3 – the lock flag was previously
+ * stored but never enforced).
  */
 const authenticate = async (req, res, next) => {
+  const fail = (message) => res.status(401).json({ status: 'error', message, error: message });
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return fail('Authentication required. Please provide a token.');
+  }
+  let decoded;
   try {
-    // Get token from header
-    const authHeader = req.headers.authorization;
-
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({
-        status: 'error',
-        message: 'Authentication required. Please provide a token.'
-      });
-    }
-
-    // Extract token
-    const token = authHeader.split(' ')[1];
-
-    // Verify token
-    const decoded = verifyAccessToken(token);
-
-    // Get user from database
+    decoded = verifyAccessToken(authHeader.slice(7));
+  } catch {
+    return fail('Invalid or expired token.');
+  }
+  try {
     const user = await db.User.findByPk(decoded.id, {
-      attributes: { exclude: ['password'] }
+      attributes: { exclude: ['password'] },
+      include: [
+        { model: db.Doctor, as: 'doctorProfile', attributes: ['isLocked'] },
+        { model: db.Caregiver, as: 'caregiverProfile', attributes: ['isLocked'] }
+      ]
     });
-
-    if (!user) {
-      return res.status(401).json({
-        status: 'error',
-        message: 'User not found or has been deleted.'
-      });
+    if (!user) return fail('User not found or has been deleted.');
+    if ((user.tokenVersion || 0) !== (decoded.tv || 0)) return fail('Session has ended. Please sign in again.');
+    if (!user.isActive) return fail('Account is inactive. Please contact support.');
+    if (user.doctorProfile?.isLocked || user.caregiverProfile?.isLocked) {
+      return fail('This account is locked. Please contact the administrator.');
     }
-
-    if (!user.isActive) {
-      return res.status(401).json({
-        status: 'error',
-        message: 'Account is inactive. Please contact support.'
-      });
-    }
-
-    // Attach user to request object
     req.user = user;
     next();
-  } catch (error) {
-    return res.status(401).json({
-      status: 'error',
-      message: error.message || 'Invalid or expired token.'
-    });
+  } catch (err) {
+    next(err);
   }
 };
 
-/**
- * Middleware to check if user has specific role(s)
- * @param  {...String} roles - Allowed roles
- */
-const authorize = (...roles) => {
-  return (req, res, next) => {
-    if (!req.user) {
-      return res.status(401).json({
-        status: 'error',
-        message: 'Authentication required.'
-      });
-    }
-
-    if (!roles.includes(req.user.role)) {
-      return res.status(403).json({
-        status: 'error',
-        message: 'Access denied. Insufficient permissions.'
-      });
-    }
-
-    next();
-  };
-};
-
-/**
- * Optional authentication - doesn't fail if no token
- * Useful for endpoints that work with or without auth
- */
-const optionalAuth = async (req, res, next) => {
-  try {
-    const authHeader = req.headers.authorization;
-
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      const token = authHeader.split(' ')[1];
-      const decoded = verifyAccessToken(token);
-      const user = await db.User.findByPk(decoded.id, {
-        attributes: { exclude: ['password'] }
-      });
-
-      if (user && user.isActive) {
-        req.user = user;
-      }
-    }
-
-    next();
-  } catch (error) {
-    // Continue without user
-    next();
-  }
-};
-
-/**
- * Middleware that allows only super_admin users.
- * Must be used after `authenticate`.
- */
-const requireSuperAdmin = (req, res, next) => {
-  if (!req.user) {
-    return res.status(401).json({ status: 'error', message: 'Authentication required.' });
-  }
-  if (req.user.role !== 'super_admin') {
-    return res.status(403).json({ status: 'error', message: 'Super-admin access required.' });
+/** Allow only the listed roles. Must follow `authenticate`. */
+const authorize = (...roles) => (req, res, next) => {
+  if (!req.user) return res.status(401).json({ status: 'error', message: 'Authentication required.' });
+  if (!roles.includes(req.user.role)) {
+    return res.status(403).json({ status: 'error', message: 'Access denied. Insufficient permissions.', error: 'Access denied.' });
   }
   next();
 };
 
-module.exports = {
-  authenticate,
-  authorize,
-  optionalAuth,
-  requireSuperAdmin
-};
+const requireSuperAdmin = authorize('super_admin');
+
+module.exports = { authenticate, authorize, requireSuperAdmin };

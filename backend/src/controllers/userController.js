@@ -17,7 +17,7 @@ const getUserProfile = async (req, res, next) => {
     const requestingUserRole = req.user.role;
 
     // Users can only view their own profile unless they're admin
-    if (userId !== requestingUserId && requestingUserRole !== 'admin') {
+    if (userId !== requestingUserId /* profiles are self-only; admins use /super-admin account views */) {
       return res.status(403).json({
         success: false,
         message: 'Access denied. You can only view your own profile.'
@@ -61,7 +61,7 @@ const updateUserProfile = async (req, res, next) => {
     const requestingUserRole = req.user.role;
 
     // Users can only update their own profile unless they're admin
-    if (userId !== requestingUserId && requestingUserRole !== 'admin') {
+    if (userId !== requestingUserId /* profiles are self-only; admins use /super-admin account views */) {
       return res.status(403).json({
         success: false,
         message: 'Access denied. You can only update your own profile.'
@@ -188,7 +188,7 @@ const deleteUserAccount = async (req, res, next) => {
     const requestingUserRole = req.user.role;
 
     // Users can only delete their own account unless they're admin
-    if (userId !== requestingUserId && requestingUserRole !== 'admin') {
+    if (userId !== requestingUserId /* profiles are self-only; admins use /super-admin account views */) {
       return res.status(403).json({
         success: false,
         message: 'Access denied. You can only delete your own account.'

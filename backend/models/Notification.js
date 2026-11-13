@@ -23,7 +23,12 @@ module.exports = (sequelize, DataTypes) => {
         'medication_assigned',
         'checkup_added',
         'checkup_reminder',
-        'mood_alert'
+        'mood_alert',
+        'help_request',
+        'access_request',
+        'access_changed',
+        'memory_deleted',
+        'care_team_changed'
       ),
       allowNull: false,
     },

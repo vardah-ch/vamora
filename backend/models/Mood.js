@@ -29,12 +29,18 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: 'manual',
-      validate: { isIn: [['manual', 'camera']] }
+      // manual           – patient chose the mood (self-report)
+      // camera_confirmed – camera gave an expression ESTIMATE that the patient
+      //                    confirmed or corrected before saving (self-report)
+      // camera           – legacy, saved without confirmation; excluded from
+      //                    alerts and summaries
+      validate: { isIn: [['manual', 'camera', 'camera_confirmed']] }
     },
     recordedAt: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW
-    }
+    },
+    inference: { type: DataTypes.JSONB, allowNull: true }
   }, {
     sequelize,
     modelName: 'Mood',

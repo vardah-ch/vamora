@@ -1,120 +1,69 @@
 'use strict';
 const express = require('express');
 const router = express.Router();
-const { ChatMessage, Photo, Mood } = require('../../models');
 const db = require('../../models');
-const { authenticate } = require('../middlewares/auth');
-const Groq = require('groq-sdk');
+const { authenticate, authorize } = require('../middlewares/auth');
+const companion = require('../ai/companion');
+const media = require('../services/mediaService');
+const audit = require('../services/auditService');
+const NotificationService = require('../services/NotificationService');
+const { badRequest } = require('../utils/http');
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+/**
+ * Cara companion. Base: /api/v1/companion (patient only)
+ * See src/ai/companion.js for the grounded pipeline and AI_METHODOLOGY.md.
+ */
 
-// ─── Build Patient Context for LLM ───────────────────────────────────────────
-const buildPatientContext = (patientName, photos, moods, recentChats) => {
-  let context = `You are Cara, a warm and caring AI companion for an Alzheimer's patient named ${patientName}. `;
-  context += `You speak gently, warmly, and with lots of love and patience. Always use the patient's name. `;
-  context += `Never say you are an AI model or mention Groq or any technology. You are simply Cara, their companion.\n\n`;
+router.post('/chat', authenticate, authorize('patient'), async (req, res) => {
+  const message = String(req.body?.message || '').trim();
+  if (!message) throw badRequest('Message is required.');
+  if (message.length > 1000) throw badRequest('That message is a little long. Could you say it in fewer words?');
 
-  if (photos.length > 0) {
-    context += `${patientName}'s saved memories (photos):\n`;
-    photos.forEach((p, i) => {
-      const date = new Date(p.takenAt).toLocaleDateString('en-US', {
-        weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
-      });
-      context += `${i + 1}. "${p.caption}" — uploaded on ${date}\n`;
-    });
-    context += '\n';
-  } else {
-    context += `${patientName} has not uploaded any memories yet.\n\n`;
-  }
+  const patientUserId = req.user.id;
+  const profile = await db.Patient.findOne({ where: { userId: patientUserId } });
+  const patientName = profile?.name?.split(' ')[0] || 'friend';
+  const history = (await db.ChatMessage.findAll({
+    where: { patientId: patientUserId }, order: [['createdAt', 'DESC']], limit: 6
+  })).reverse();
 
-  if (moods.length > 0) {
-    context += `${patientName}'s recent mood check-ins:\n`;
-    moods.forEach(m => {
-      const date = new Date(m.recordedAt).toLocaleDateString('en-US', {
-        weekday: 'long', month: 'short', day: 'numeric'
-      });
-      context += `- Felt ${m.mood} on ${date}${m.note ? ` — note: "${m.note}"` : ''}\n`;
-    });
-    context += '\n';
-  }
+  await db.ChatMessage.create({ patientId: patientUserId, role: 'user', content: message });
 
-  if (recentChats.length > 0) {
-    context += `Recent conversation history:\n`;
-    recentChats.forEach(m => {
-      const role = m.role === 'user' ? patientName : 'Cara';
-      context += `${role}: ${m.content}\n`;
-    });
-    context += '\n';
-  }
+  const result = await companion.respond({
+    patientUserId, patientName, message,
+    history: history.map(h => ({ role: h.role, content: h.content })),
+    onUrgent: async () => {
+      const n = await NotificationService.sendHelpRequest(patientUserId);
+      await audit.record(req, { action: 'companion.help_request', patientUserId, reason: `notified ${n}` });
+    }
+  });
 
-  context += `Important rules:\n`;
-  context += `1. Always be warm, gentle, and patient\n`;
-  context += `2. Keep responses short and simple — maximum 3 sentences\n`;
-  context += `3. Always end with a gentle question or encouragement\n`;
-  context += `4. If patient seems sad or anxious, console them with love\n`;
-  context += `5. Reference their actual memories and moods when relevant\n`;
-  context += `6. Never give medical advice — always suggest speaking to their caregiver or doctor\n`;
-  context += `7. Use emojis occasionally to keep the tone warm 💜\n`;
+  // Photo sources get a signed thumbnail URL so the patient can RECOGNISE the memory.
+  const sources = result.sources.map(s => ({ ...s, url: s.sourceType === 'photo' ? media.signedUrl('photo', s.id, req.user.id) : null }));
 
-  return context;
-};
+  await db.ChatMessage.create({
+    patientId: patientUserId, role: 'assistant', content: result.reply,
+    metadata: { sources: result.sources, grounding: result.grounding }
+  });
 
-// ─── Main Chat Route ──────────────────────────────────────────────────────────
-router.post('/chat', authenticate, async (req, res) => {
-  try {
-    const { message } = req.body;
-    if (!message) return res.status(400).json({ error: 'Message is required.' });
-
-    const patientId = req.user.id;
-
-    const patientProfile = await db.Patient.findOne({ where: { userId: patientId } });
-    const patientName = patientProfile?.name?.split(' ')[0] || req.user.email?.split('@')[0] || 'Friend';
-
-    const [photos, moods, recentChats] = await Promise.all([
-      Photo.findAll({ where: { patientId }, order: [['takenAt', 'DESC']], limit: 20 }),
-      Mood.findAll({ where: { patientId }, order: [['recordedAt', 'DESC']], limit: 10 }),
-      ChatMessage.findAll({ where: { patientId }, order: [['createdAt', 'DESC']], limit: 10 })
-    ]);
-
-    const systemContext = buildPatientContext(patientName, photos, moods, recentChats.reverse());
-
-    await ChatMessage.create({ patientId, role: 'user', content: message });
-
-    const completion = await groq.chat.completions.create({
-      model: 'llama-3.3-70b-versatile',
-      messages: [
-        { role: 'system', content: systemContext },
-        { role: 'user', content: message }
-      ],
-      max_tokens: 150,
-      temperature: 0.7
-    });
-
-    const reply = completion.choices[0]?.message?.content?.trim() ||
-      `I'm here for you, ${patientName}. 💜 Would you like to talk about one of your memories?`;
-
-    await ChatMessage.create({ patientId, role: 'assistant', content: reply });
-
-    res.json({ reply });
-
-  } catch (err) {
-    console.error('COMPANION ERROR:', err.message);
-    res.status(500).json({ error: err.message });
-  }
+  res.json({ reply: result.reply, sources, grounding: result.grounding });
 });
 
-// ─── Chat History Route ───────────────────────────────────────────────────────
-router.get('/history', authenticate, async (req, res) => {
-  try {
-    const messages = await ChatMessage.findAll({
-      where: { patientId: req.user.id },
-      order: [['createdAt', 'ASC']],
-      limit: 50
-    });
-    res.json(messages);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+router.get('/history', authenticate, authorize('patient'), async (req, res) => {
+  const messages = await db.ChatMessage.findAll({
+    where: { patientId: req.user.id }, order: [['createdAt', 'DESC']], limit: 50
+  });
+  res.json(messages.reverse().map(m => ({
+    id: m.id, role: m.role, content: m.content, createdAt: m.createdAt,
+    sources: (m.metadata?.sources || []).map(s => ({ ...s, url: s.sourceType === 'photo' ? media.signedUrl('photo', s.id, req.user.id) : null })),
+    groundingStatus: m.metadata?.grounding?.status || null
+  })));
+});
+
+/** The patient can clear their own conversation history (right to erasure). */
+router.delete('/history', authenticate, authorize('patient'), async (req, res) => {
+  const n = await db.ChatMessage.destroy({ where: { patientId: req.user.id } });
+  await audit.record(req, { action: 'companion.history.clear', patientUserId: req.user.id, reason: `${n} messages` });
+  res.json({ success: true, deleted: n });
 });
 
 module.exports = router;

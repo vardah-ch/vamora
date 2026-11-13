@@ -21,7 +21,7 @@ const {
  */
 router.get('/',
   authenticate,
-  authorize('admin'),
+  authorize('admin', 'super_admin'),
   userController.getAllUsers
 );
 
@@ -67,7 +67,7 @@ router.put('/:id/password',
  */
 router.patch('/:id/status',
   authenticate,
-  authorize('admin'),
+  authorize('admin', 'super_admin'),
   userController.updateAccountStatus
 );
 

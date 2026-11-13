@@ -99,6 +99,12 @@ module.exports = (sequelize, DataTypes) => {
     isActive: {
       type: DataTypes.BOOLEAN,
       defaultValue: true
+    },
+    // Incremented on logout / password change to revoke all outstanding tokens.
+    tokenVersion: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0
     }
   }, {
     sequelize,
@@ -110,14 +116,14 @@ module.exports = (sequelize, DataTypes) => {
       // Hash password before creating user
       beforeCreate: async (user) => {
         if (user.password) {
-          const salt = await bcrypt.genSalt(10);
+          const salt = await bcrypt.genSalt(Number(process.env.BCRYPT_ROUNDS) || 12);
           user.password = await bcrypt.hash(user.password, salt);
         }
       },
       // Hash password before updating if it was changed
       beforeUpdate: async (user) => {
         if (user.changed('password')) {
-          const salt = await bcrypt.genSalt(10);
+          const salt = await bcrypt.genSalt(Number(process.env.BCRYPT_ROUNDS) || 12);
           user.password = await bcrypt.hash(user.password, salt);
         }
       }
