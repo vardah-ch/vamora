@@ -54,7 +54,8 @@ function documentText(d) {
  * @param {object} opts  {k, now: Date, mode: 'hybrid'|'lexical'|'dense'|'recency', queryVector, docVectors: Map}
  */
 function rankDocuments(docs, query, opts = {}) {
-  const { k = 5, now = new Date(), queryVector = null, docVectors = new Map() } = opts;
+  // useContext / expansionWeight exist for ablation studies (eval/); production uses the defaults.
+  const { k = 5, now = new Date(), queryVector = null, docVectors = new Map(), useContext = true, expansionWeight = 0.4 } = opts;
   let mode = opts.mode || 'hybrid';
   if ((mode === 'hybrid' || mode === 'dense') && !queryVector) mode = mode === 'dense' ? 'dense-unavailable' : 'lexical';
 
@@ -81,7 +82,7 @@ function rankDocuments(docs, query, opts = {}) {
         { text: d.text || '', weight: 1 },
         { text: d.category || '', weight: 0.5 }
       ]
-    })));
+    })), { expansionWeight });
     const lex = [...bm25.score(query).entries()].sort((a, b) => b[1].score - a[1].score);
     lex.forEach(([id, r], rank) => {
       const s = signals.get(id);
@@ -104,7 +105,7 @@ function rankDocuments(docs, query, opts = {}) {
 
   // 3. Context (all modes except recency)
   const nowMin = now.getHours() * 60 + now.getMinutes();
-  for (const d of docs) {
+  for (const d of (useContext ? docs : [])) {
     const s = signals.get(d.id);
     const people = (d.people || []).map(p => normalize(p));
     const personHit = people.some(p => rawTokens(p).some(part => part.length > 2 && (qRaw.has(part) || qTokens.has(stem(part)))));
