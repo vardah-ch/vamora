@@ -1,0 +1,93 @@
+{
+  "rule": "max OOV abstention s.t. MRR@5 >= best-0.01 and falseAbstention <= 0.05",
+  "rows": [
+    {
+      "threshold": 0.25,
+      "mrr5": 0.8698412698412697,
+      "hit1": 0.8095238095238095,
+      "recall5": 0.8988095238095238,
+      "falseAbstention": 0,
+      "oovAbstention": 0.3333333333333333
+    },
+    {
+      "threshold": 0.28,
+      "mrr5": 0.8757936507936509,
+      "hit1": 0.8333333333333334,
+      "recall5": 0.875,
+      "falseAbstention": 0,
+      "oovAbstention": 0.3333333333333333
+    },
+    {
+      "threshold": 0.3,
+      "mrr5": 0.8615079365079366,
+      "hit1": 0.8095238095238095,
+      "recall5": 0.9107142857142857,
+      "falseAbstention": 0,
+      "oovAbstention": 0.5
+    },
+    {
+      "threshold": 0.32,
+      "mrr5": 0.8686507936507937,
+      "hit1": 0.8095238095238095,
+      "recall5": 0.9107142857142857,
+      "falseAbstention": 0,
+      "oovAbstention": 0.5
+    },
+    {
+      "threshold": 0.35,
+      "mrr5": 0.86984126984127,
+      "hit1": 0.8095238095238095,
+      "recall5": 0.9226190476190477,
+      "falseAbstention": 0,
+      "oovAbstention": 0.5
+    },
+    {
+      "threshold": 0.38,
+      "mrr5": 0.8103174603174603,
+      "hit1": 0.7380952380952381,
+      "recall5": 0.8988095238095238,
+      "falseAbstention": 0.023809523809523808,
+      "oovAbstention": 0.5
+    },
+    {
+      "threshold": 0.4,
+      "mrr5": 0.8222222222222222,
+      "hit1": 0.7619047619047619,
+      "recall5": 0.8988095238095238,
+      "falseAbstention": 0.023809523809523808,
+      "oovAbstention": 0.5
+    },
+    {
+      "threshold": 0.42,
+      "mrr5": 0.8222222222222222,
+      "hit1": 0.7619047619047619,
+      "recall5": 0.8988095238095238,
+      "falseAbstention": 0.023809523809523808,
+      "oovAbstention": 0.5
+    },
+    {
+      "threshold": 0.45,
+      "mrr5": 0.8043650793650793,
+      "hit1": 0.7380952380952381,
+      "recall5": 0.8630952380952381,
+      "falseAbstention": 0.023809523809523808,
+      "oovAbstention": 0.6666666666666666
+    },
+    {
+      "threshold": 0.5,
+      "mrr5": 0.7638888888888887,
+      "hit1": 0.6904761904761905,
+      "recall5": 0.8392857142857143,
+      "falseAbstention": 0.023809523809523808,
+      "oovAbstention": 0.6666666666666666
+    }
+  ],
+  "chosen": {
+    "threshold": 0.35,
+    "mrr5": 0.86984126984127,
+    "hit1": 0.8095238095238095,
+    "recall5": 0.9226190476190477,
+    "falseAbstention": 0,
+    "oovAbstention": 0.5
+  }
+}

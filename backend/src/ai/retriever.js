@@ -23,7 +23,7 @@ const embeddings = require('./embeddings');
  */
 
 const RRF_K = 60;
-const DENSE_MIN = Number(process.env.DENSE_MIN_SIMILARITY) || 0.32;
+const DENSE_MIN = Number(process.env.DENSE_MIN_SIMILARITY) || 0.35; // selected on the dev set, see eval/README.md
 const BONUS = { person: 0.02, intent: 0.008, routineNow: 0.016 };
 
 const INTENTS = {

@@ -1,0 +1,2760 @@
+{
+  "generatedAt": "2026-11-13T04:19:36.705Z",
+  "dataset": "eval\\data\\persona_yusuf_heldout.json",
+  "datasetVersion": "1.0-heldout",
+  "nDocuments": 26,
+  "nQueries": 30,
+  "k": 5,
+  "embeddingModel": "Xenova/all-MiniLM-L6-v2",
+  "embeddingStatus": {
+    "model": "Xenova/all-MiniLM-L6-v2",
+    "enabled": true,
+    "disabledReason": null
+  },
+  "modelLoadAndEncodeMs": 1171,
+  "node": "v24.21.0",
+  "summary": {
+    "recency": {
+      "nAnswerable": 25,
+      "hit1": 0,
+      "mrr5": 0.018000000000000002,
+      "recall5": 0.11666666666666665,
+      "ndcg5": 0.0528779696696579,
+      "falseAbstention": 0,
+      "oovAbstention": 0,
+      "nOov": 4,
+      "rankingLatencyMsMean": 0.3172233333333333,
+      "byKind": {
+        "direct": {
+          "n": 6,
+          "hit1": 0,
+          "mrr": 0,
+          "recall5": 0.041666666666666664
+        },
+        "relational": {
+          "n": 6,
+          "hit1": 0,
+          "mrr": 0,
+          "recall5": 0.1111111111111111
+        },
+        "paraphrase": {
+          "n": 6,
+          "hit1": 0,
+          "mrr": 0.075,
+          "recall5": 0.3333333333333333
+        },
+        "routine": {
+          "n": 4,
+          "hit1": 0,
+          "mrr": 0,
+          "recall5": 0
+        },
+        "urdu_romanised": {
+          "n": 3,
+          "hit1": 0,
+          "mrr": 0,
+          "recall5": 0
+        }
+      }
+    },
+    "bm25": {
+      "nAnswerable": 25,
+      "hit1": 0.72,
+      "mrr5": 0.76,
+      "recall5": 0.7533333333333334,
+      "ndcg5": 0.7652881217144822,
+      "falseAbstention": 0.2,
+      "oovAbstention": 0.25,
+      "nOov": 4,
+      "rankingLatencyMsMean": 0.9398733333333331,
+      "byKind": {
+        "direct": {
+          "n": 6,
+          "hit1": 0.8333333333333334,
+          "mrr": 0.9166666666666666,
+          "recall5": 1
+        },
+        "relational": {
+          "n": 6,
+          "hit1": 1,
+          "mrr": 1,
+          "recall5": 0.8055555555555557
+        },
+        "paraphrase": {
+          "n": 6,
+          "hit1": 0.6666666666666666,
+          "mrr": 0.75,
+          "recall5": 0.8333333333333334
+        },
+        "routine": {
+          "n": 4,
+          "hit1": 0.5,
+          "mrr": 0.5,
+          "recall5": 0.5
+        },
+        "urdu_romanised": {
+          "n": 3,
+          "hit1": 0.3333333333333333,
+          "mrr": 0.3333333333333333,
+          "recall5": 0.3333333333333333
+        }
+      }
+    },
+    "lexical": {
+      "nAnswerable": 25,
+      "hit1": 0.72,
+      "mrr5": 0.82,
+      "recall5": 0.8533333333333334,
+      "ndcg5": 0.8436248718130237,
+      "falseAbstention": 0.08,
+      "oovAbstention": 0.25,
+      "nOov": 4,
+      "rankingLatencyMsMean": 0.6850066666666668,
+      "byKind": {
+        "direct": {
+          "n": 6,
+          "hit1": 0.8333333333333334,
+          "mrr": 0.9166666666666666,
+          "recall5": 1
+        },
+        "relational": {
+          "n": 6,
+          "hit1": 1,
+          "mrr": 1,
+          "recall5": 0.8055555555555557
+        },
+        "paraphrase": {
+          "n": 6,
+          "hit1": 0.5,
+          "mrr": 0.6666666666666666,
+          "recall5": 0.8333333333333334
+        },
+        "routine": {
+          "n": 4,
+          "hit1": 0.75,
+          "mrr": 0.875,
+          "recall5": 1
+        },
+        "urdu_romanised": {
+          "n": 3,
+          "hit1": 0.3333333333333333,
+          "mrr": 0.5,
+          "recall5": 0.5
+        }
+      }
+    },
+    "dense": {
+      "nAnswerable": 25,
+      "hit1": 0.56,
+      "mrr5": 0.6666666666666665,
+      "recall5": 0.7733333333333334,
+      "ndcg5": 0.7053876133553431,
+      "falseAbstention": 0.08,
+      "oovAbstention": 0.5,
+      "nOov": 4,
+      "rankingLatencyMsMean": 0.20385,
+      "byKind": {
+        "direct": {
+          "n": 6,
+          "hit1": 0.6666666666666666,
+          "mrr": 0.8055555555555555,
+          "recall5": 1
+        },
+        "relational": {
+          "n": 6,
+          "hit1": 0.5,
+          "mrr": 0.5833333333333334,
+          "recall5": 0.5555555555555556
+        },
+        "paraphrase": {
+          "n": 6,
+          "hit1": 0.8333333333333334,
+          "mrr": 0.8333333333333334,
+          "recall5": 0.8333333333333334
+        },
+        "routine": {
+          "n": 4,
+          "hit1": 0.5,
+          "mrr": 0.7083333333333334,
+          "recall5": 1
+        },
+        "urdu_romanised": {
+          "n": 3,
+          "hit1": 0,
+          "mrr": 0.16666666666666666,
+          "recall5": 0.3333333333333333
+        }
+      }
+    },
+    "hybrid-noctx": {
+      "nAnswerable": 25,
+      "hit1": 0.72,
+      "mrr5": 0.8,
+      "recall5": 0.8133333333333335,
+      "ndcg5": 0.8180082660986752,
+      "falseAbstention": 0.04,
+      "oovAbstention": 0,
+      "nOov": 4,
+      "rankingLatencyMsMean": 0.63764,
+      "byKind": {
+        "direct": {
+          "n": 6,
+          "hit1": 0.6666666666666666,
+          "mrr": 0.8333333333333334,
+          "recall5": 1
+        },
+        "relational": {
+          "n": 6,
+          "hit1": 0.8333333333333334,
+          "mrr": 0.9166666666666666,
+          "recall5": 0.8055555555555557
+        },
+        "paraphrase": {
+          "n": 6,
+          "hit1": 0.8333333333333334,
+          "mrr": 0.9166666666666666,
+          "recall5": 1
+        },
+        "routine": {
+          "n": 4,
+          "hit1": 0.5,
+          "mrr": 0.5,
+          "recall5": 0.5
+        },
+        "urdu_romanised": {
+          "n": 3,
+          "hit1": 0.6666666666666666,
+          "mrr": 0.6666666666666666,
+          "recall5": 0.5
+        }
+      }
+    },
+    "hybrid": {
+      "nAnswerable": 25,
+      "hit1": 0.72,
+      "mrr5": 0.8333333333333333,
+      "recall5": 0.8933333333333334,
+      "ndcg5": 0.8661901365295956,
+      "falseAbstention": 0,
+      "oovAbstention": 0,
+      "nOov": 4,
+      "rankingLatencyMsMean": 0.9366633333333335,
+      "byKind": {
+        "direct": {
+          "n": 6,
+          "hit1": 0.6666666666666666,
+          "mrr": 0.8333333333333334,
+          "recall5": 1
+        },
+        "relational": {
+          "n": 6,
+          "hit1": 0.8333333333333334,
+          "mrr": 0.9166666666666666,
+          "recall5": 0.8055555555555557
+        },
+        "paraphrase": {
+          "n": 6,
+          "hit1": 0.8333333333333334,
+          "mrr": 0.9166666666666666,
+          "recall5": 1
+        },
+        "routine": {
+          "n": 4,
+          "hit1": 0.75,
+          "mrr": 0.8333333333333334,
+          "recall5": 1
+        },
+        "urdu_romanised": {
+          "n": 3,
+          "hit1": 0.3333333333333333,
+          "mrr": 0.5,
+          "recall5": 0.5
+        }
+      }
+    }
+  },
+  "comparisons": {
+    "hybrid_minus_recency_mrr": {
+      "mean": 0.8153333333333332,
+      "lo": 0.7,
+      "hi": 0.916
+    },
+    "hybrid_minus_bm25_mrr": {
+      "mean": 0.07333333333333325,
+      "lo": -0.08,
+      "hi": 0.24
+    },
+    "hybrid_minus_lexical_mrr": {
+      "mean": 0.013333333333333308,
+      "lo": -0.08,
+      "hi": 0.12
+    },
+    "hybrid_minus_dense_mrr": {
+      "mean": 0.16666666666666674,
+      "lo": 0.06,
+      "hi": 0.29333333333333333
+    },
+    "hybrid_minus_hybrid-noctx_mrr": {
+      "mean": 0.033333333333333215,
+      "lo": -0.04,
+      "hi": 0.13333333333333333
+    }
+  },
+  "perQuery": {
+    "recency": [
+      {
+        "id": "h01",
+        "kind": "direct",
+        "ranked": [
+          "e3",
+          "ph2",
+          "ph1",
+          "w3",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0.25,
+        "ndcg": 0.10961051126301759,
+        "empty": 0
+      },
+      {
+        "id": "h02",
+        "kind": "direct",
+        "ranked": [
+          "e3",
+          "ph2",
+          "ph1",
+          "w3",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h03",
+        "kind": "direct",
+        "ranked": [
+          "e3",
+          "ph2",
+          "ph1",
+          "w3",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h04",
+        "kind": "direct",
+        "ranked": [
+          "e3",
+          "ph2",
+          "ph1",
+          "w3",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h05",
+        "kind": "direct",
+        "ranked": [
+          "e3",
+          "ph2",
+          "ph1",
+          "w3",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h06",
+        "kind": "direct",
+        "ranked": [
+          "e3",
+          "ph2",
+          "ph1",
+          "w3",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h07",
+        "kind": "relational",
+        "ranked": [
+          "e3",
+          "ph2",
+          "ph1",
+          "w3",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h08",
+        "kind": "relational",
+        "ranked": [
+          "e3",
+          "ph2",
+          "ph1",
+          "w3",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h09",
+        "kind": "relational",
+        "ranked": [
+          "e3",
+          "ph2",
+          "ph1",
+          "w3",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h10",
+        "kind": "relational",
+        "ranked": [
+          "e3",
+          "ph2",
+          "ph1",
+          "w3",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0.6666666666666666,
+        "ndcg": 0.39480936517049525,
+        "empty": 0
+      },
+      {
+        "id": "h11",
+        "kind": "relational",
+        "ranked": [
+          "e3",
+          "ph2",
+          "ph1",
+          "w3",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h12",
+        "kind": "relational",
+        "ranked": [
+          "e3",
+          "ph2",
+          "ph1",
+          "w3",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h13",
+        "kind": "paraphrase",
+        "ranked": [
+          "e3",
+          "ph2",
+          "ph1",
+          "w3",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0.25,
+        "recall": 1,
+        "ndcg": 0.4306765580733931,
+        "empty": 0
+      },
+      {
+        "id": "h14",
+        "kind": "paraphrase",
+        "ranked": [
+          "e3",
+          "ph2",
+          "ph1",
+          "w3",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0.2,
+        "recall": 1,
+        "ndcg": 0.38685280723454163,
+        "empty": 0
+      },
+      {
+        "id": "h15",
+        "kind": "paraphrase",
+        "ranked": [
+          "e3",
+          "ph2",
+          "ph1",
+          "w3",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h16",
+        "kind": "paraphrase",
+        "ranked": [
+          "e3",
+          "ph2",
+          "ph1",
+          "w3",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h17",
+        "kind": "paraphrase",
+        "ranked": [
+          "e3",
+          "ph2",
+          "ph1",
+          "w3",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h18",
+        "kind": "paraphrase",
+        "ranked": [
+          "e3",
+          "ph2",
+          "ph1",
+          "w3",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h19",
+        "kind": "routine",
+        "ranked": [
+          "e3",
+          "ph2",
+          "ph1",
+          "w3",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h20",
+        "kind": "routine",
+        "ranked": [
+          "e3",
+          "ph2",
+          "ph1",
+          "w3",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h21",
+        "kind": "routine",
+        "ranked": [
+          "e3",
+          "ph2",
+          "ph1",
+          "w3",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h22",
+        "kind": "routine",
+        "ranked": [
+          "e3",
+          "ph2",
+          "ph1",
+          "w3",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h23",
+        "kind": "urdu_romanised",
+        "ranked": [
+          "e3",
+          "ph2",
+          "ph1",
+          "w3",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h24",
+        "kind": "urdu_romanised",
+        "ranked": [
+          "e3",
+          "ph2",
+          "ph1",
+          "w3",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h25",
+        "kind": "urdu_romanised",
+        "ranked": [
+          "e3",
+          "ph2",
+          "ph1",
+          "w3",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h26",
+        "kind": "unanswerable_oov",
+        "ranked": [
+          "e3",
+          "ph2",
+          "ph1",
+          "w3",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h27",
+        "kind": "unanswerable_oov",
+        "ranked": [
+          "e3",
+          "ph2",
+          "ph1",
+          "w3",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h28",
+        "kind": "unanswerable_oov",
+        "ranked": [
+          "e3",
+          "ph2",
+          "ph1",
+          "w3",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h29",
+        "kind": "unanswerable_oov",
+        "ranked": [
+          "e3",
+          "ph2",
+          "ph1",
+          "w3",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h30",
+        "kind": "unanswerable_infocus",
+        "ranked": [
+          "e3",
+          "ph2",
+          "ph1",
+          "w3",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      }
+    ],
+    "bm25": [
+      {
+        "id": "h01",
+        "kind": "direct",
+        "ranked": [
+          "e1",
+          "p1",
+          "ph1",
+          "r2",
+          "e4"
+        ],
+        "hit1": 0,
+        "mrr": 0.5,
+        "recall": 1,
+        "ndcg": 0.8381840863879982,
+        "empty": 0
+      },
+      {
+        "id": "h02",
+        "kind": "direct",
+        "ranked": [
+          "p5",
+          "r3",
+          "e2"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h03",
+        "kind": "direct",
+        "ranked": [
+          "w1",
+          "r1"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h04",
+        "kind": "direct",
+        "ranked": [
+          "ph5"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h05",
+        "kind": "direct",
+        "ranked": [
+          "e2",
+          "l1",
+          "ph3",
+          "p2",
+          "w3"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h06",
+        "kind": "direct",
+        "ranked": [
+          "ph4",
+          "e4"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h07",
+        "kind": "relational",
+        "ranked": [
+          "p1"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h08",
+        "kind": "relational",
+        "ranked": [
+          "p3"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h09",
+        "kind": "relational",
+        "ranked": [
+          "p2"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h10",
+        "kind": "relational",
+        "ranked": [
+          "p4"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 0.3333333333333333,
+        "ndcg": 0.7262287617954056,
+        "empty": 0
+      },
+      {
+        "id": "h11",
+        "kind": "relational",
+        "ranked": [
+          "p6"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h12",
+        "kind": "relational",
+        "ranked": [
+          "p5",
+          "p1",
+          "e3"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 0.5,
+        "ndcg": 0.8262346571285599,
+        "empty": 0
+      },
+      {
+        "id": "h13",
+        "kind": "paraphrase",
+        "ranked": [
+          "w3",
+          "ph3",
+          "e2",
+          "l1",
+          "p2"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h14",
+        "kind": "paraphrase",
+        "ranked": [],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 1
+      },
+      {
+        "id": "h15",
+        "kind": "paraphrase",
+        "ranked": [
+          "l2",
+          "r5",
+          "e1"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h16",
+        "kind": "paraphrase",
+        "ranked": [
+          "p6"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h17",
+        "kind": "paraphrase",
+        "ranked": [
+          "l3",
+          "p3",
+          "e4"
+        ],
+        "hit1": 0,
+        "mrr": 0.5,
+        "recall": 1,
+        "ndcg": 0.7967075809905066,
+        "empty": 0
+      },
+      {
+        "id": "h18",
+        "kind": "paraphrase",
+        "ranked": [
+          "p1",
+          "e1"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h19",
+        "kind": "routine",
+        "ranked": [],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 1
+      },
+      {
+        "id": "h20",
+        "kind": "routine",
+        "ranked": [
+          "r1"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h21",
+        "kind": "routine",
+        "ranked": [
+          "r4"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h22",
+        "kind": "routine",
+        "ranked": [],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 1
+      },
+      {
+        "id": "h23",
+        "kind": "urdu_romanised",
+        "ranked": [],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 1
+      },
+      {
+        "id": "h24",
+        "kind": "urdu_romanised",
+        "ranked": [],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 1
+      },
+      {
+        "id": "h25",
+        "kind": "urdu_romanised",
+        "ranked": [
+          "r5",
+          "ph2",
+          "e3",
+          "p4"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 0.944847956559586,
+        "empty": 0
+      },
+      {
+        "id": "h26",
+        "kind": "unanswerable_oov",
+        "ranked": [
+          "e4"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h27",
+        "kind": "unanswerable_oov",
+        "ranked": [],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 1
+      },
+      {
+        "id": "h28",
+        "kind": "unanswerable_oov",
+        "ranked": [
+          "l2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h29",
+        "kind": "unanswerable_oov",
+        "ranked": [
+          "l3"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h30",
+        "kind": "unanswerable_infocus",
+        "ranked": [
+          "w2",
+          "e3",
+          "p4",
+          "r5",
+          "ph2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      }
+    ],
+    "lexical": [
+      {
+        "id": "h01",
+        "kind": "direct",
+        "ranked": [
+          "e1",
+          "p1",
+          "r2",
+          "e4",
+          "ph1"
+        ],
+        "hit1": 0,
+        "mrr": 0.5,
+        "recall": 1,
+        "ndcg": 0.828576998918179,
+        "empty": 0
+      },
+      {
+        "id": "h02",
+        "kind": "direct",
+        "ranked": [
+          "p5",
+          "r3",
+          "e2"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h03",
+        "kind": "direct",
+        "ranked": [
+          "w1",
+          "r1"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h04",
+        "kind": "direct",
+        "ranked": [
+          "ph5"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h05",
+        "kind": "direct",
+        "ranked": [
+          "e2",
+          "l1",
+          "ph3",
+          "p2",
+          "w3"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h06",
+        "kind": "direct",
+        "ranked": [
+          "ph4",
+          "e4"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h07",
+        "kind": "relational",
+        "ranked": [
+          "p1",
+          "e1"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h08",
+        "kind": "relational",
+        "ranked": [
+          "p3"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h09",
+        "kind": "relational",
+        "ranked": [
+          "p2"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h10",
+        "kind": "relational",
+        "ranked": [
+          "p4"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 0.3333333333333333,
+        "ndcg": 0.7262287617954056,
+        "empty": 0
+      },
+      {
+        "id": "h11",
+        "kind": "relational",
+        "ranked": [
+          "p6"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h12",
+        "kind": "relational",
+        "ranked": [
+          "p5",
+          "p1",
+          "e3"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 0.5,
+        "ndcg": 0.8262346571285599,
+        "empty": 0
+      },
+      {
+        "id": "h13",
+        "kind": "paraphrase",
+        "ranked": [
+          "w3",
+          "ph3",
+          "e2",
+          "l1",
+          "p2"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h14",
+        "kind": "paraphrase",
+        "ranked": [],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 1
+      },
+      {
+        "id": "h15",
+        "kind": "paraphrase",
+        "ranked": [
+          "l2",
+          "r5",
+          "e1"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h16",
+        "kind": "paraphrase",
+        "ranked": [
+          "p6"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h17",
+        "kind": "paraphrase",
+        "ranked": [
+          "l3",
+          "p3",
+          "e4"
+        ],
+        "hit1": 0,
+        "mrr": 0.5,
+        "recall": 1,
+        "ndcg": 0.7967075809905066,
+        "empty": 0
+      },
+      {
+        "id": "h18",
+        "kind": "paraphrase",
+        "ranked": [
+          "e1",
+          "p1"
+        ],
+        "hit1": 0,
+        "mrr": 0.5,
+        "recall": 1,
+        "ndcg": 0.7967075809905066,
+        "empty": 0
+      },
+      {
+        "id": "h19",
+        "kind": "routine",
+        "ranked": [
+          "r3"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h20",
+        "kind": "routine",
+        "ranked": [
+          "r1"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h21",
+        "kind": "routine",
+        "ranked": [
+          "r4",
+          "r5"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h22",
+        "kind": "routine",
+        "ranked": [
+          "r4",
+          "r5"
+        ],
+        "hit1": 0,
+        "mrr": 0.5,
+        "recall": 1,
+        "ndcg": 0.6309297535714574,
+        "empty": 0
+      },
+      {
+        "id": "h23",
+        "kind": "urdu_romanised",
+        "ranked": [],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 1
+      },
+      {
+        "id": "h24",
+        "kind": "urdu_romanised",
+        "ranked": [
+          "p2"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 0.5,
+        "ndcg": 0.8262346571285599,
+        "empty": 0
+      },
+      {
+        "id": "h25",
+        "kind": "urdu_romanised",
+        "ranked": [
+          "e3",
+          "r5",
+          "p4",
+          "ph2"
+        ],
+        "hit1": 0,
+        "mrr": 0.5,
+        "recall": 1,
+        "ndcg": 0.6590018048024133,
+        "empty": 0
+      },
+      {
+        "id": "h26",
+        "kind": "unanswerable_oov",
+        "ranked": [
+          "e4"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h27",
+        "kind": "unanswerable_oov",
+        "ranked": [],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 1
+      },
+      {
+        "id": "h28",
+        "kind": "unanswerable_oov",
+        "ranked": [
+          "l2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h29",
+        "kind": "unanswerable_oov",
+        "ranked": [
+          "l3"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h30",
+        "kind": "unanswerable_infocus",
+        "ranked": [
+          "e3",
+          "p4",
+          "r5",
+          "w2",
+          "ph2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      }
+    ],
+    "dense": [
+      {
+        "id": "h01",
+        "kind": "direct",
+        "ranked": [
+          "e1",
+          "r2",
+          "p1",
+          "e4",
+          "ph1"
+        ],
+        "hit1": 0,
+        "mrr": 0.3333333333333333,
+        "recall": 1,
+        "ndcg": 0.7711718900041457,
+        "empty": 0
+      },
+      {
+        "id": "h02",
+        "kind": "direct",
+        "ranked": [
+          "p5",
+          "e2",
+          "r3"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h03",
+        "kind": "direct",
+        "ranked": [
+          "w1"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h04",
+        "kind": "direct",
+        "ranked": [
+          "ph5"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h05",
+        "kind": "direct",
+        "ranked": [
+          "e2",
+          "ph3",
+          "l1",
+          "w3"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 0.9197207891481876,
+        "empty": 0
+      },
+      {
+        "id": "h06",
+        "kind": "direct",
+        "ranked": [
+          "e4",
+          "ph4"
+        ],
+        "hit1": 0,
+        "mrr": 0.5,
+        "recall": 1,
+        "ndcg": 0.7967075809905066,
+        "empty": 0
+      },
+      {
+        "id": "h07",
+        "kind": "relational",
+        "ranked": [
+          "p1",
+          "p3",
+          "ph1"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h08",
+        "kind": "relational",
+        "ranked": [
+          "p3"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h09",
+        "kind": "relational",
+        "ranked": [
+          "p4",
+          "p2",
+          "ph2"
+        ],
+        "hit1": 0,
+        "mrr": 0.5,
+        "recall": 1,
+        "ndcg": 0.6309297535714574,
+        "empty": 0
+      },
+      {
+        "id": "h10",
+        "kind": "relational",
+        "ranked": [
+          "p4"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 0.3333333333333333,
+        "ndcg": 0.7262287617954056,
+        "empty": 0
+      },
+      {
+        "id": "h11",
+        "kind": "relational",
+        "ranked": [],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 1
+      },
+      {
+        "id": "h12",
+        "kind": "relational",
+        "ranked": [
+          "p1"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h13",
+        "kind": "paraphrase",
+        "ranked": [
+          "w3",
+          "ph3",
+          "l1",
+          "e2"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h14",
+        "kind": "paraphrase",
+        "ranked": [
+          "w2"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h15",
+        "kind": "paraphrase",
+        "ranked": [
+          "l2"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h16",
+        "kind": "paraphrase",
+        "ranked": [
+          "p6"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h17",
+        "kind": "paraphrase",
+        "ranked": [
+          "p3",
+          "l3",
+          "e4",
+          "p1"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h18",
+        "kind": "paraphrase",
+        "ranked": [],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 1
+      },
+      {
+        "id": "h19",
+        "kind": "routine",
+        "ranked": [
+          "r3"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h20",
+        "kind": "routine",
+        "ranked": [
+          "r4",
+          "r1"
+        ],
+        "hit1": 0,
+        "mrr": 0.5,
+        "recall": 1,
+        "ndcg": 0.6309297535714574,
+        "empty": 0
+      },
+      {
+        "id": "h21",
+        "kind": "routine",
+        "ranked": [
+          "r4",
+          "r5"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h22",
+        "kind": "routine",
+        "ranked": [
+          "r4",
+          "r1",
+          "r5"
+        ],
+        "hit1": 0,
+        "mrr": 0.3333333333333333,
+        "recall": 1,
+        "ndcg": 0.5,
+        "empty": 0
+      },
+      {
+        "id": "h23",
+        "kind": "urdu_romanised",
+        "ranked": [
+          "e3",
+          "p3",
+          "p6"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h24",
+        "kind": "urdu_romanised",
+        "ranked": [
+          "p6"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h25",
+        "kind": "urdu_romanised",
+        "ranked": [
+          "e3",
+          "r5",
+          "p4",
+          "ph2",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0.5,
+        "recall": 1,
+        "ndcg": 0.6590018048024133,
+        "empty": 0
+      },
+      {
+        "id": "h26",
+        "kind": "unanswerable_oov",
+        "ranked": [],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 1
+      },
+      {
+        "id": "h27",
+        "kind": "unanswerable_oov",
+        "ranked": [
+          "p4",
+          "e3",
+          "ph2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h28",
+        "kind": "unanswerable_oov",
+        "ranked": [],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 1
+      },
+      {
+        "id": "h29",
+        "kind": "unanswerable_oov",
+        "ranked": [
+          "w3"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h30",
+        "kind": "unanswerable_infocus",
+        "ranked": [
+          "e3",
+          "r5",
+          "p4",
+          "ph2",
+          "p6"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      }
+    ],
+    "hybrid-noctx": [
+      {
+        "id": "h01",
+        "kind": "direct",
+        "ranked": [
+          "e1",
+          "p1",
+          "r2",
+          "ph1",
+          "e4"
+        ],
+        "hit1": 0,
+        "mrr": 0.5,
+        "recall": 1,
+        "ndcg": 0.8381840863879982,
+        "empty": 0
+      },
+      {
+        "id": "h02",
+        "kind": "direct",
+        "ranked": [
+          "p5",
+          "e2",
+          "r3"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h03",
+        "kind": "direct",
+        "ranked": [
+          "w1",
+          "r1"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h04",
+        "kind": "direct",
+        "ranked": [
+          "ph5"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h05",
+        "kind": "direct",
+        "ranked": [
+          "e2",
+          "l1",
+          "ph3",
+          "w3",
+          "p2"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h06",
+        "kind": "direct",
+        "ranked": [
+          "e4",
+          "ph4"
+        ],
+        "hit1": 0,
+        "mrr": 0.5,
+        "recall": 1,
+        "ndcg": 0.7967075809905066,
+        "empty": 0
+      },
+      {
+        "id": "h07",
+        "kind": "relational",
+        "ranked": [
+          "p1",
+          "e1",
+          "ph1",
+          "p3"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h08",
+        "kind": "relational",
+        "ranked": [
+          "p3"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h09",
+        "kind": "relational",
+        "ranked": [
+          "p2",
+          "p4",
+          "ph2"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h10",
+        "kind": "relational",
+        "ranked": [
+          "p4"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 0.3333333333333333,
+        "ndcg": 0.7262287617954056,
+        "empty": 0
+      },
+      {
+        "id": "h11",
+        "kind": "relational",
+        "ranked": [
+          "p6"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h12",
+        "kind": "relational",
+        "ranked": [
+          "p1",
+          "p5",
+          "e3"
+        ],
+        "hit1": 0,
+        "mrr": 0.5,
+        "recall": 0.5,
+        "ndcg": 0.52129602861432,
+        "empty": 0
+      },
+      {
+        "id": "h13",
+        "kind": "paraphrase",
+        "ranked": [
+          "w3",
+          "ph3",
+          "l1",
+          "e2",
+          "p2"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h14",
+        "kind": "paraphrase",
+        "ranked": [
+          "w2"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h15",
+        "kind": "paraphrase",
+        "ranked": [
+          "l2",
+          "r5",
+          "e1"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h16",
+        "kind": "paraphrase",
+        "ranked": [
+          "p6"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h17",
+        "kind": "paraphrase",
+        "ranked": [
+          "p3",
+          "l3",
+          "e4",
+          "p1"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h18",
+        "kind": "paraphrase",
+        "ranked": [
+          "e1",
+          "p1"
+        ],
+        "hit1": 0,
+        "mrr": 0.5,
+        "recall": 1,
+        "ndcg": 0.7967075809905066,
+        "empty": 0
+      },
+      {
+        "id": "h19",
+        "kind": "routine",
+        "ranked": [],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 1
+      },
+      {
+        "id": "h20",
+        "kind": "routine",
+        "ranked": [
+          "r1",
+          "r4"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h21",
+        "kind": "routine",
+        "ranked": [
+          "r4"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h22",
+        "kind": "routine",
+        "ranked": [
+          "r4",
+          "r1"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h23",
+        "kind": "urdu_romanised",
+        "ranked": [
+          "e3",
+          "p3",
+          "p6"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h24",
+        "kind": "urdu_romanised",
+        "ranked": [
+          "p2",
+          "p6"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 0.5,
+        "ndcg": 0.8262346571285599,
+        "empty": 0
+      },
+      {
+        "id": "h25",
+        "kind": "urdu_romanised",
+        "ranked": [
+          "r5",
+          "e3",
+          "ph2",
+          "p4",
+          "w2"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 0.944847956559586,
+        "empty": 0
+      },
+      {
+        "id": "h26",
+        "kind": "unanswerable_oov",
+        "ranked": [
+          "e4"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h27",
+        "kind": "unanswerable_oov",
+        "ranked": [
+          "p4",
+          "ph2",
+          "e3"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h28",
+        "kind": "unanswerable_oov",
+        "ranked": [
+          "l2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h29",
+        "kind": "unanswerable_oov",
+        "ranked": [
+          "l3",
+          "w3"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h30",
+        "kind": "unanswerable_infocus",
+        "ranked": [
+          "e3",
+          "ph2",
+          "p4",
+          "r5",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      }
+    ],
+    "hybrid": [
+      {
+        "id": "h01",
+        "kind": "direct",
+        "ranked": [
+          "e1",
+          "p1",
+          "r2",
+          "e4",
+          "ph1"
+        ],
+        "hit1": 0,
+        "mrr": 0.5,
+        "recall": 1,
+        "ndcg": 0.828576998918179,
+        "empty": 0
+      },
+      {
+        "id": "h02",
+        "kind": "direct",
+        "ranked": [
+          "p5",
+          "e2",
+          "r3"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h03",
+        "kind": "direct",
+        "ranked": [
+          "w1",
+          "r1"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h04",
+        "kind": "direct",
+        "ranked": [
+          "ph5"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h05",
+        "kind": "direct",
+        "ranked": [
+          "e2",
+          "l1",
+          "ph3",
+          "w3",
+          "p2"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h06",
+        "kind": "direct",
+        "ranked": [
+          "e4",
+          "ph4"
+        ],
+        "hit1": 0,
+        "mrr": 0.5,
+        "recall": 1,
+        "ndcg": 0.7967075809905066,
+        "empty": 0
+      },
+      {
+        "id": "h07",
+        "kind": "relational",
+        "ranked": [
+          "p1",
+          "e1",
+          "p3",
+          "ph1"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h08",
+        "kind": "relational",
+        "ranked": [
+          "p3"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h09",
+        "kind": "relational",
+        "ranked": [
+          "p2",
+          "p4",
+          "ph2"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h10",
+        "kind": "relational",
+        "ranked": [
+          "p4"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 0.3333333333333333,
+        "ndcg": 0.7262287617954056,
+        "empty": 0
+      },
+      {
+        "id": "h11",
+        "kind": "relational",
+        "ranked": [
+          "p6"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h12",
+        "kind": "relational",
+        "ranked": [
+          "p1",
+          "p5",
+          "e3"
+        ],
+        "hit1": 0,
+        "mrr": 0.5,
+        "recall": 0.5,
+        "ndcg": 0.52129602861432,
+        "empty": 0
+      },
+      {
+        "id": "h13",
+        "kind": "paraphrase",
+        "ranked": [
+          "w3",
+          "ph3",
+          "l1",
+          "e2",
+          "p2"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h14",
+        "kind": "paraphrase",
+        "ranked": [
+          "w2"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h15",
+        "kind": "paraphrase",
+        "ranked": [
+          "l2",
+          "r5",
+          "e1"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h16",
+        "kind": "paraphrase",
+        "ranked": [
+          "p6"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h17",
+        "kind": "paraphrase",
+        "ranked": [
+          "p3",
+          "l3",
+          "e4",
+          "p1"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h18",
+        "kind": "paraphrase",
+        "ranked": [
+          "e1",
+          "p1"
+        ],
+        "hit1": 0,
+        "mrr": 0.5,
+        "recall": 1,
+        "ndcg": 0.7967075809905066,
+        "empty": 0
+      },
+      {
+        "id": "h19",
+        "kind": "routine",
+        "ranked": [
+          "r3"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h20",
+        "kind": "routine",
+        "ranked": [
+          "r1",
+          "r4"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h21",
+        "kind": "routine",
+        "ranked": [
+          "r4",
+          "r5"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 1,
+        "ndcg": 1,
+        "empty": 0
+      },
+      {
+        "id": "h22",
+        "kind": "routine",
+        "ranked": [
+          "r4",
+          "r1",
+          "r5"
+        ],
+        "hit1": 0,
+        "mrr": 0.3333333333333333,
+        "recall": 1,
+        "ndcg": 0.5,
+        "empty": 0
+      },
+      {
+        "id": "h23",
+        "kind": "urdu_romanised",
+        "ranked": [
+          "e3",
+          "p3",
+          "p6"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h24",
+        "kind": "urdu_romanised",
+        "ranked": [
+          "p2",
+          "p6"
+        ],
+        "hit1": 1,
+        "mrr": 1,
+        "recall": 0.5,
+        "ndcg": 0.8262346571285599,
+        "empty": 0
+      },
+      {
+        "id": "h25",
+        "kind": "urdu_romanised",
+        "ranked": [
+          "e3",
+          "r5",
+          "p4",
+          "ph2",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0.5,
+        "recall": 1,
+        "ndcg": 0.6590018048024133,
+        "empty": 0
+      },
+      {
+        "id": "h26",
+        "kind": "unanswerable_oov",
+        "ranked": [
+          "e4"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h27",
+        "kind": "unanswerable_oov",
+        "ranked": [
+          "p4",
+          "e3",
+          "ph2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h28",
+        "kind": "unanswerable_oov",
+        "ranked": [
+          "l2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h29",
+        "kind": "unanswerable_oov",
+        "ranked": [
+          "l3",
+          "w3"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      },
+      {
+        "id": "h30",
+        "kind": "unanswerable_infocus",
+        "ranked": [
+          "e3",
+          "p4",
+          "r5",
+          "ph2",
+          "w2"
+        ],
+        "hit1": 0,
+        "mrr": 0,
+        "recall": 0,
+        "ndcg": 0,
+        "empty": 0
+      }
+    ]
+  }
+}
