@@ -163,16 +163,16 @@ const SuperAdminDashboard = () => {
 
   const handleDeleteUser = async (u) => {
     const label = u.name || u.email;
-    if (!window.confirm(`Are you sure you want to delete ${label}?`)) return;
+    if (!window.confirm(`Deactivate ${label}? They will be signed out and unable to log in. Their personal data is kept.`)) return;
     setDeletingId(u.id);
     setUsersError('');
     setUsersSuccess('');
     try {
       await api.delete(`/super-admin/users/${u.id}`);
       setUsers(prev => prev.filter(x => x.id !== u.id));
-      setUsersSuccess('User deleted successfully.');
+      setUsersSuccess('Account deactivated. Personal data was kept.');
     } catch (e) {
-      setUsersError(e.response?.data?.message || 'Failed to delete user.');
+      setUsersError(e.response?.data?.message || 'Failed to deactivate account.');
     } finally { setDeletingId(null); }
   };
 
@@ -411,7 +411,7 @@ const SuperAdminDashboard = () => {
                                 opacity: deletingId === u.id ? 0.5 : 1,
                               }}
                             >
-                              {deletingId === u.id ? '…' : 'Delete'}
+                              {deletingId === u.id ? '…' : 'Deactivate'}
                             </button>
                           )}
                         </td>

@@ -14,6 +14,8 @@ import CaregiverDashboard from './pages/CaregiverDashboard';
 import DoctorDashboard from './pages/DoctorDashboard';
 import MoodAssessment from './pages/MoodAssessment';
 import SuperAdminDashboard from './pages/SuperAdminDashboard';
+import MyPrivacy from './pages/MyPrivacy';
+import MemoryBook from './pages/MemoryBook';
 import './App.css';
 
 function App() {
@@ -32,6 +34,8 @@ function App() {
           <Route path="/mood-checkin" element={<ProtectedRoute allowedRoles={['patient']}><MoodCheckin /></ProtectedRoute>} />
           <Route path="/talk-to-companion" element={<ProtectedRoute allowedRoles={['patient']}><TalkToCompanion /></ProtectedRoute>} />
           <Route path="/mood-assessment" element={<ProtectedRoute allowedRoles={['patient']}><MoodAssessment /></ProtectedRoute>} />
+          <Route path="/my-privacy" element={<ProtectedRoute allowedRoles={['patient']}><MyPrivacy /></ProtectedRoute>} />
+          <Route path="/memory-book" element={<ProtectedRoute allowedRoles={['patient']}><MemoryBook /></ProtectedRoute>} />
           <Route path="/caregiver-dashboard" element={<ProtectedRoute allowedRoles={['caregiver']}><CaregiverDashboard /></ProtectedRoute>} />
           <Route path="/doctor-dashboard" element={<ProtectedRoute allowedRoles={['doctor']}><DoctorDashboard /></ProtectedRoute>} />
           <Route path="/super-admin-dashboard" element={<ProtectedRoute allowedRoles={['super_admin']}><SuperAdminDashboard /></ProtectedRoute>} />

@@ -75,8 +75,20 @@ const ACTION_LABELS = {
   'grant.revoke': 'stopped sharing with someone',
   'care_team.add': 'added someone to your care team',
   'consent_mode.update': 'changed how sharing decisions are made',
-  'companion.help_request': 'alerted your helpers that you asked for help'
+  'companion.help_request': 'alerted your helpers that you asked for help',
+  'companion.history.clear': 'cleared the conversation with Cara',
+  'photo.confirm': 'confirmed a photo',
+  'memory.confirm': 'confirmed a memory',
+  'memories.search': 'searched your memories',
+  'grant.reviewed': 'checked who can see your information',
+  'assignment.create': 'added a doctor to your care team',
+  'assignment.end': 'ended a doctor’s care assignment',
+  'patient.create': 'created your account',
+  'mmse.view': 'looked at your memory-test scores',
+  'medications.list': 'looked at your medicines'
 };
+// The person's own display-setting changes are not access events; hide them from this log.
+const HIDDEN_ACTIONS = ['preferences.update'];
 
 async function grantView(g) {
   const name = await lib.displayName(g.granteeUserId);
@@ -228,7 +240,7 @@ router.get('/activity', authenticate, async (req, res) => {
   await authorityFor(req, patient);
   const limit = Math.min(Number(req.query.limit) || 50, 200);
   const events = await db.AuditEvent.findAll({
-    where: { patientUserId: patient.userId, outcome: { [Op.in]: ['allowed', 'denied'] } },
+    where: { patientUserId: patient.userId, outcome: { [Op.in]: ['allowed', 'denied'] }, action: { [Op.notIn]: HIDDEN_ACTIONS } },
     order: [['occurredAt', 'DESC']], limit
   });
   const names = new Map();

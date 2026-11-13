@@ -1,172 +1,206 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, Mic, Square, Play, Trash2, RotateCcw, CheckCircle, Upload } from 'lucide-react';
 import api from '../services/api';
+import { mediaUrl } from '../services/media';
 import './PhotoGallery.css';
 
+/**
+ * Patient photo library with voice memory cues.
+ *  - Photos load through short-lived signed URLs (never a public folder).
+ *  - Each photo can carry a voice recording (record in the browser or play).
+ *  - Photos added by helpers show "Added by a helper" until the person confirms.
+ *  - Removing is undoable for 30 days ("Recently removed").
+ */
 const CATEGORIES = ['All', 'Family', 'Pet', 'Home', 'Memory'];
+const CATEGORY_COLORS = { family: '#6a4c93', pet: '#a35200', home: '#2e7d32', memory: '#1565c0' };
 
-const CATEGORY_COLORS = {
-  family: '#7b5ea7',
-  pet: '#fb8c00',
-  home: '#43a047',
-  memory: '#1976d2',
-};
+function VoiceRecorder({ photoId, onSaved }) {
+  const [state, setState] = useState('idle'); // idle | recording | saving | error
+  const recRef = useRef(null);
+  const chunks = useRef([]);
+  const supported = typeof window !== 'undefined' && !!window.MediaRecorder && !!navigator.mediaDevices?.getUserMedia;
+  if (!supported) return null;
+
+  const start = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const rec = new MediaRecorder(stream);
+      chunks.current = [];
+      rec.ondataavailable = e => e.data.size && chunks.current.push(e.data);
+      rec.onstop = async () => {
+        stream.getTracks().forEach(t => t.stop());
+        setState('saving');
+        const blob = new Blob(chunks.current, { type: rec.mimeType || 'audio/webm' });
+        const fd = new FormData();
+        fd.append('voice', blob, 'voice.webm');
+        try { await api.post(`/photos/${photoId}/voice`, fd); setState('idle'); onSaved(); }
+        catch { setState('error'); }
+      };
+      recRef.current = rec;
+      rec.start();
+      setState('recording');
+    } catch { setState('error'); }
+  };
+
+  return (
+    <div className="voice-recorder">
+      {state === 'recording'
+        ? <button className="voice-btn recording" onClick={() => recRef.current?.stop()}><Square size={18} /> Stop and save</button>
+        : <button className="voice-btn" onClick={start} disabled={state === 'saving'}><Mic size={18} /> {state === 'saving' ? 'Saving…' : 'Record a voice note'}</button>}
+      {state === 'error' && <p className="gallery-error" role="alert">Recording did not work. Please check the microphone.</p>}
+    </div>
+  );
+}
 
 export default function PhotoGallery() {
+  const navigate = useNavigate();
   const [photos, setPhotos] = useState([]);
+  const [removed, setRemoved] = useState([]);
   const [activeCategory, setActiveCategory] = useState('All');
   const [previewPhoto, setPreviewPhoto] = useState(null);
+  const [showRemoved, setShowRemoved] = useState(false);
+  const [upload, setUpload] = useState({ file: null, caption: '', category: 'memory' });
+  const [message, setMessage] = useState('');
 
-  useEffect(() => { fetchPhotos(); }, []);
-
-  const fetchPhotos = async () => {
+  const fetchPhotos = useCallback(async () => {
     try {
-      const { data } = await api.get('/photos');
+      const [{ data }, { data: gone }] = await Promise.all([api.get('/photos'), api.get('/photos/removed')]);
       setPhotos(data);
+      setRemoved(gone);
+      setPreviewPhoto(p => (p ? data.find(x => x.id === p.id) || null : null));
+    } catch {
+      setMessage('Could not load your memories. Please try again.');
+    }
+  }, []);
+
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- async fetch: state is set after await, not synchronously
+  useEffect(() => { fetchPhotos(); }, [fetchPhotos]);
+
+  const filtered = activeCategory === 'All' ? photos : photos.filter(p => p.category === activeCategory.toLowerCase());
+
+  const removePhoto = async (photo) => {
+    if (!window.confirm(`Remove "${photo.caption}"? You can bring it back from "Recently removed" for 30 days.`)) return;
+    await api.delete(`/photos/${photo.id}`);
+    setPreviewPhoto(null);
+    setMessage('Memory removed. You can bring it back from "Recently removed".');
+    fetchPhotos();
+  };
+
+  const restore = async (photo) => { await api.post(`/photos/${photo.id}/restore`); setMessage('Memory brought back.'); fetchPhotos(); };
+  const confirmPhoto = async (photo) => { await api.post(`/photos/${photo.id}/confirm`); fetchPhotos(); };
+
+  const submitUpload = async (e) => {
+    e.preventDefault();
+    if (!upload.file || !upload.caption.trim()) { setMessage('Please choose a photo and write a few words about it.'); return; }
+    const fd = new FormData();
+    fd.append('photo', upload.file);
+    fd.append('caption', upload.caption.trim());
+    fd.append('category', upload.category);
+    try {
+      await api.post('/photos', fd);
+      setUpload({ file: null, caption: '', category: 'memory' });
+      e.target.reset();
+      setMessage('Your photo was added.');
+      fetchPhotos();
     } catch (err) {
-      console.error('Error fetching photos:', err);
+      setMessage(err.response?.data?.message || 'The photo could not be added.');
     }
   };
 
-  const getImageUrl = (filename) => {
-    return `http://localhost:5000/uploads/photos/${filename}`;
-  };
-
-  const filtered = activeCategory === 'All'
-    ? photos
-    : photos.filter(p => p.category?.toLowerCase() === activeCategory.toLowerCase());
-
   return (
     <div className="gallery-container">
-
+      <button className="gallery-back" onClick={() => navigate('/patient-dashboard')}><ArrowLeft size={22} /> Home</button>
       <div className="gallery-header">
-        <h1 className="gallery-title">📸 My Memories</h1>
+        <h1 className="gallery-title">My Photos</h1>
         <p className="gallery-subtitle">Your cherished moments, always with you</p>
       </div>
+      {message && <p className="gallery-message" role="status">{message}</p>}
 
-      {/* Category Filter Tabs */}
-      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', margin: '1rem 0' }}>
+      <div className="gallery-filters" role="group" aria-label="Show photos of">
         {CATEGORIES.map(cat => (
-          <button
-            key={cat}
-            onClick={() => setActiveCategory(cat)}
-            style={{
-              padding: '0.45rem 1.1rem',
-              borderRadius: '999px',
-              border: '2px solid #7b5ea7',
-              background: activeCategory === cat ? '#7b5ea7' : 'white',
-              color: activeCategory === cat ? 'white' : '#7b5ea7',
-              fontWeight: 600,
-              cursor: 'pointer',
-              fontSize: '0.9rem',
-              transition: 'all 0.15s',
-            }}
-          >
-            {cat}
-          </button>
+          <button key={cat} onClick={() => setActiveCategory(cat)} aria-pressed={activeCategory === cat}
+            className={`gallery-filter ${activeCategory === cat ? 'active' : ''}`}>{cat}</button>
         ))}
       </div>
 
       {filtered.length === 0 ? (
         <div className="empty-state">
-          <div className="empty-icon">💙</div>
-          <p className="empty-text">Your caregiver will add your memories here 💙</p>
+          <div className="empty-icon" aria-hidden="true">💙</div>
+          <p className="empty-text">No photos here yet. You or your helpers can add some below.</p>
         </div>
       ) : (
         <div className="photo-grid">
           {filtered.map(photo => (
-            <div key={photo.id} className="photo-card">
-              <img
-                src={getImageUrl(photo.filename)}
-                alt={photo.caption}
-                className="photo-image"
-                style={{ cursor: 'pointer' }}
-                onClick={() => setPreviewPhoto(photo)}
-                onError={e => { e.target.style.display = 'none'; }}
-              />
+            <button key={photo.id} className="photo-card" onClick={() => setPreviewPhoto(photo)} aria-label={`Open photo: ${photo.caption}`}>
+              <img src={mediaUrl(photo.url)} alt="" className="photo-image" onError={e => { e.currentTarget.style.visibility = 'hidden'; }} />
               <div className="photo-details">
                 <p className="photo-caption">{photo.caption}</p>
-                {photo.category && (
-                  <span style={{
-                    display: 'inline-block',
-                    background: CATEGORY_COLORS[photo.category] || '#7b5ea7',
-                    color: 'white',
-                    borderRadius: '999px',
-                    padding: '0.2rem 0.7rem',
-                    fontSize: '0.75rem',
-                    fontWeight: 600,
-                    textTransform: 'capitalize',
-                    marginTop: '0.35rem',
-                  }}>
-                    {photo.category}
-                  </span>
-                )}
+                <div className="photo-badges">
+                  {photo.category && <span className="photo-badge" style={{ background: CATEGORY_COLORS[photo.category] || '#6a4c93' }}>{photo.category}</span>}
+                  {photo.hasVoiceNote && <span className="photo-badge photo-badge-voice">Voice note</span>}
+                  {photo.patientConfirmed === false && <span className="photo-badge photo-badge-helper">Added by a helper</span>}
+                </div>
               </div>
-            </div>
+            </button>
           ))}
         </div>
       )}
 
-      {/* Photo Preview Modal */}
+      <form className="gallery-upload" onSubmit={submitUpload}>
+        <h2><Upload size={22} aria-hidden="true" /> Add a photo</h2>
+        <label>Photo <input type="file" accept="image/jpeg,image/png,image/gif,image/webp" onChange={e => setUpload(u => ({ ...u, file: e.target.files?.[0] || null }))} /></label>
+        <label>What is this photo about? <input type="text" maxLength={300} value={upload.caption} onChange={e => setUpload(u => ({ ...u, caption: e.target.value }))} placeholder="e.g. Eid lunch with Hina and Zainab" /></label>
+        <label>Kind of memory
+          <select value={upload.category} onChange={e => setUpload(u => ({ ...u, category: e.target.value }))}>
+            <option value="family">Family</option><option value="home">Home</option><option value="pet">Pet</option><option value="memory">Memory</option>
+          </select>
+        </label>
+        <button type="submit" className="gallery-primary">Add photo</button>
+      </form>
+
+      {removed.length > 0 && (
+        <section className="gallery-removed">
+          <button className="gallery-filter" onClick={() => setShowRemoved(s => !s)} aria-expanded={showRemoved}>
+            Recently removed ({removed.length})
+          </button>
+          {showRemoved && (
+            <ul>
+              {removed.map(p => (
+                <li key={p.id}>
+                  <span>{p.caption}</span>
+                  <button className="gallery-secondary" onClick={() => restore(p)}><RotateCcw size={16} /> Bring back</button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
+
       {previewPhoto && (
-        <div
-          style={{
-            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-            background: 'rgba(0,0,0,0.85)', display: 'flex',
-            alignItems: 'center', justifyContent: 'center',
-            zIndex: 1000, padding: '1rem'
-          }}
-          onClick={() => setPreviewPhoto(null)}
-        >
-          <div
-            style={{
-              background: 'white', borderRadius: '20px', overflow: 'hidden',
-              maxWidth: '90vw', maxHeight: '90vh', position: 'relative',
-              boxShadow: '0 20px 60px rgba(0,0,0,0.5)', display: 'flex',
-              flexDirection: 'column'
-            }}
-            onClick={e => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setPreviewPhoto(null)}
-              style={{
-                position: 'absolute', top: '0.75rem', right: '0.75rem',
-                background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none',
-                width: '36px', height: '36px', borderRadius: '50%',
-                fontSize: '1rem', cursor: 'pointer', zIndex: 10,
-                display: 'flex', alignItems: 'center', justifyContent: 'center'
-              }}
-            >✕</button>
-            <img
-              src={getImageUrl(previewPhoto.filename)}
-              alt={previewPhoto.caption}
-              style={{
-                width: '100%', maxHeight: '70vh',
-                objectFit: 'contain', background: '#1a1a2e', display: 'block'
-              }}
-            />
-            <div style={{ padding: '1.2rem 1.5rem', background: 'white' }}>
-              <p style={{ fontSize: '1.2rem', fontWeight: '700', color: '#2d1f3d', margin: '0 0 0.4rem 0' }}>
-                {previewPhoto.caption}
-              </p>
-              {previewPhoto.category && (
-                <span style={{
-                  display: 'inline-block',
-                  background: CATEGORY_COLORS[previewPhoto.category] || '#7b5ea7',
-                  color: 'white',
-                  borderRadius: '999px',
-                  padding: '0.2rem 0.7rem',
-                  fontSize: '0.75rem',
-                  fontWeight: 600,
-                  textTransform: 'capitalize',
-                }}>
-                  {previewPhoto.category}
-                </span>
+        <div className="gallery-modal" role="dialog" aria-modal="true" aria-label={previewPhoto.caption} onClick={() => setPreviewPhoto(null)}>
+          <div className="gallery-modal-card" onClick={e => e.stopPropagation()}>
+            <button className="gallery-close" onClick={() => setPreviewPhoto(null)} aria-label="Close">Close</button>
+            <img src={mediaUrl(previewPhoto.url)} alt={previewPhoto.caption} className="gallery-modal-img" />
+            <div className="gallery-modal-body">
+              <p className="gallery-modal-caption">{previewPhoto.caption}</p>
+              {previewPhoto.voiceUrl && (
+                <div className="voice-player">
+                  <Play size={18} aria-hidden="true" />
+                  <audio controls src={mediaUrl(previewPhoto.voiceUrl)} aria-label="Voice note for this photo" />
+                </div>
               )}
+              <VoiceRecorder photoId={previewPhoto.id} onSaved={fetchPhotos} />
+              <div className="gallery-modal-actions">
+                {previewPhoto.patientConfirmed === false && (
+                  <button className="gallery-secondary" onClick={() => confirmPhoto(previewPhoto)}><CheckCircle size={16} /> Yes, this is my memory</button>
+                )}
+                <button className="gallery-danger" onClick={() => removePhoto(previewPhoto)}><Trash2 size={16} /> Remove</button>
+              </div>
             </div>
           </div>
         </div>
       )}
-
     </div>
   );
 }

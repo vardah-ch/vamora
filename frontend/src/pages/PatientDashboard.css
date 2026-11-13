@@ -481,3 +481,8 @@
   border-radius: 25px;
   flex-shrink: 0;
 }
+
+/* Privacy banner (consent requests / review) */
+.privacy-banner { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; background: #fff8e1; border: 2px solid #e0b84f; border-radius: 16px; padding: 1rem 1.25rem; margin: 0 auto 1.5rem; max-width: 1100px; color: #3d2c00; font-size: 1.15rem; font-weight: 600; }
+.privacy-banner p { margin: 0; flex: 1 1 260px; }
+.privacy-banner button { min-height: 52px; padding: 0.5rem 1.25rem; border-radius: 12px; border: none; background: #5b3f8c; color: #fff; font-size: 1.1rem; font-weight: 700; cursor: pointer; }

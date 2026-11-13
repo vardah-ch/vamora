@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import * as faceapi from 'face-api.js';
 import { ArrowLeft, Camera, X, CheckCircle, RefreshCw, Send } from 'lucide-react';
 import api from '../services/api';
+import { usePreferences } from '../hooks/usePreferences';
 import './MoodAssessment.css';
 
 // Keys match the expression labels returned by face-api.js exactly
@@ -30,7 +31,10 @@ const API_MOOD_MAP = {
 // Model weight files served from public/models (downloaded at install time)
 const MODEL_URL = '/models';
 
-const STORAGE_KEY = 'vamora_mood_assessments';
+// Only patient-CONFIRMED moods are kept locally. The old key held unconfirmed
+// camera estimates and is removed (data minimisation).
+const STORAGE_KEY = 'vamora_mood_confirmed';
+try { localStorage.removeItem('vamora_mood_assessments'); } catch { /* storage unavailable */ }
 
 /**
  * Fast pixel-level pre-check — rejects all-black, overexposed, or
@@ -90,8 +94,24 @@ async function detectMoodFromDataUrl(dataUrl) {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
+const MOOD_CHOICES = [
+  { value: 'happy', label: 'Happy', emoji: '😊' }, { value: 'calm', label: 'Calm', emoji: '😌' },
+  { value: 'sad', label: 'Sad', emoji: '😔' }, { value: 'anxious', label: 'Worried', emoji: '😰' },
+  { value: 'frustrated', label: 'Frustrated', emoji: '😡' }, { value: 'tired', label: 'Tired', emoji: '😴' },
+  { value: 'excited', label: 'Excited', emoji: '🤩' }, { value: 'confused', label: 'Confused', emoji: '😕' }
+];
+
+/**
+ * Mood camera – redesigned (audit A4). Facial expression is NOT a reliable
+ * readout of how someone feels, and expression models are less accurate for
+ * older faces. So the camera only offers a GUESS; the person always chooses
+ * their mood, and nothing is stored (not even locally) unless they confirm.
+ * The feature is off until the person turns it on.
+ */
 export default function MoodAssessment() {
   const navigate = useNavigate();
+  const { prefs, loaded: prefsLoaded, update: updatePrefs } = usePreferences();
+  const [chosenMood, setChosenMood] = useState(null);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const streamRef = useRef(null);
@@ -223,19 +243,29 @@ export default function MoodAssessment() {
     }
 
     const entry = { id: Date.now(), ...result, timestamp: new Date().toISOString() };
-    setHistory(prev => [entry, ...prev]);
     setLatestResult(entry);
+    setChosenMood(API_MOOD_MAP[result.expression] || null);
     setCameraState('idle');
+  };
 
-    // Persist to backend; localStorage is already saved via the history useEffect
-    const apiMood = API_MOOD_MAP[result.expression] || 'calm';
+  // Step 3: the person confirms or corrects; only then is anything saved.
+  const confirmMood = async () => {
+    if (!latestResult || !chosenMood) return;
+
+    const agreed = chosenMood === API_MOOD_MAP[latestResult.expression];
     let toastType = 'local';
     try {
-      await api.post('/moods', { mood: apiMood, note: 'Detected via camera', source: 'camera' });
+      await api.post('/moods', {
+        mood: chosenMood, source: 'camera_confirmed',
+        inference: { expression: latestResult.expression, confidence: latestResult.confidence, agreed }
+      });
       toastType = 'db';
+      setHistory(prev => [{ ...latestResult, label: MOOD_CHOICES.find(m => m.value === chosenMood)?.label, emoji: MOOD_CHOICES.find(m => m.value === chosenMood)?.emoji, confirmed: true }, ...prev]);
     } catch (err) {
-      console.error('Backend mood save failed, kept in localStorage:', err);
+      console.error('Mood save failed:', err?.response?.status);
     }
+    setLatestResult(null);
+    setChosenMood(null);
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
     setSavedToast(toastType);
     toastTimerRef.current = setTimeout(() => setSavedToast(null), 3000);
@@ -266,7 +296,7 @@ export default function MoodAssessment() {
           <span className="ma-header-icon">🧠</span>
           <div>
             <h1 className="ma-title">Mood Assessment</h1>
-            <p className="ma-subtitle">Real-time facial expression analysis</p>
+            <p className="ma-subtitle">An optional guess from your face. You choose how you feel.</p>
           </div>
         </div>
         <div className="ma-model-badge">
@@ -293,10 +323,22 @@ export default function MoodAssessment() {
           </div>
         )}
 
-        {cameraState === 'idle' && modelsReady && (
+        {cameraState === 'idle' && prefsLoaded && !prefs.moodCameraOptIn && (
+          <div className="ma-optin">
+            <h2>Before you start</h2>
+            <p>The camera can make a guess about your facial expression. A face does not always show how someone feels, so the guess can be wrong.</p>
+            <p>Your picture stays on this device and is not saved. You will always choose your own mood, and nothing is saved unless you say so.</p>
+            <div className="ma-optin-actions">
+              <button className="ma-scan-btn" onClick={() => updatePrefs({ moodCameraOptIn: true })}>I understand, turn it on</button>
+              <button className="ma-scan-again-btn" onClick={() => navigate('/mood-checkin')}>Choose my mood without the camera</button>
+            </div>
+          </div>
+        )}
+
+        {cameraState === 'idle' && modelsReady && prefs.moodCameraOptIn && !latestResult && (
           <button className="ma-scan-btn" onClick={startScan}>
             <Camera size={30} />
-            <span>Scan My Mood</span>
+            <span>Try the camera guess</span>
           </button>
         )}
 
@@ -394,18 +436,23 @@ export default function MoodAssessment() {
 
       {/* ── Latest Result Banner ── */}
       {latestResult && cameraState === 'idle' && (
-        <div className="ma-result-banner" style={{ borderColor: latestResult.color }}>
-          <CheckCircle size={26} color={latestResult.color} />
-          <span className="ma-result-emoji">{latestResult.emoji}</span>
-          <div className="ma-result-text">
-            <p className="ma-result-mood" style={{ color: latestResult.color }}>
-              {latestResult.label} detected!
-            </p>
-            <p className="ma-result-conf">Confidence: {latestResult.confidence}%</p>
+        <div className="ma-confirm" role="region" aria-label="Choose your mood">
+          <p className="ma-confirm-guess">
+            The camera guessed your face looks <strong>{latestResult.label.toLowerCase()}</strong>. This is only a guess. Only you know how you feel.
+          </p>
+          <p className="ma-confirm-q">How do you feel right now?</p>
+          <div className="ma-confirm-grid">
+            {MOOD_CHOICES.map(m => (
+              <button key={m.value} className={`ma-confirm-mood ${chosenMood === m.value ? 'selected' : ''}`}
+                aria-pressed={chosenMood === m.value} onClick={() => setChosenMood(m.value)}>
+                <span aria-hidden="true">{m.emoji}</span> {m.label}
+              </button>
+            ))}
           </div>
-          <button className="ma-scan-again-btn" onClick={startScan}>
-            Scan Again
-          </button>
+          <div className="ma-optin-actions">
+            <button className="ma-scan-btn" disabled={!chosenMood} onClick={confirmMood}><CheckCircle size={22} /> Save my mood</button>
+            <button className="ma-scan-again-btn" onClick={() => { setLatestResult(null); setChosenMood(null); }}>Don't save</button>
+          </div>
         </div>
       )}
 
@@ -422,7 +469,7 @@ export default function MoodAssessment() {
           whiteSpace: 'nowrap',
         }}>
           <CheckCircle size={18} />
-          {savedToast === 'db' ? 'Mood saved to your record' : 'Saved locally'}
+          {savedToast === 'db' ? 'Your mood was saved' : 'Your mood could not be saved. Please try again.'}
         </div>
       )}
 

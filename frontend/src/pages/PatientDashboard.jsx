@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Camera, MessageCircle, Smile, Scan, Calendar, Clock } from 'lucide-react';
+import { Camera, MessageCircle, Smile, Scan, Calendar, Clock, BookHeart, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import { usePreferences } from '../hooks/usePreferences';
 import './PatientDashboard.css';
 
 const PatientDashboard = () => {
@@ -11,16 +12,24 @@ const PatientDashboard = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [appointments, setAppointments] = useState([]);
   const [medications, setMedications] = useState([]);
+  const [privacyTodo, setPrivacyTodo] = useState({ pending: 0, review: 0 });
+  usePreferences(); // applies the person's text-size preference
   const patientName = user?.profile?.name?.split(' ')[0] || 'Patient';
 
   useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    const timer = setInterval(() => setCurrentTime(new Date()), 30000);
     return () => clearInterval(timer);
   }, []);
 
   useEffect(() => {
     fetchAppointments();
     fetchMedications();
+    api.get('/privacy/overview')
+      .then(({ data }) => setPrivacyTodo({
+        pending: data.grants.filter(g => g.status === 'pending').length,
+        review: data.grants.filter(g => g.status === 'active' && g.needsReview).length
+      }))
+      .catch(() => {});
   }, []);
 
   const fetchAppointments = async () => {
@@ -53,7 +62,7 @@ const PatientDashboard = () => {
   });
 
   const formatTime = (date) => date.toLocaleTimeString('en-US', {
-    hour: '2-digit', minute: '2-digit', second: '2-digit'
+    hour: 'numeric', minute: '2-digit'
   });
 
   const formatAppointmentDate = (date) => new Date(date).toLocaleDateString('en-US', {
@@ -100,6 +109,18 @@ const PatientDashboard = () => {
           </div>
         </div>
       </header>
+
+      {(privacyTodo.pending > 0 || privacyTodo.review > 0) && (
+        <div className="privacy-banner" role="status">
+          <ShieldCheck size={28} aria-hidden="true" />
+          <p>
+            {privacyTodo.pending > 0
+              ? `${privacyTodo.pending === 1 ? 'Someone is' : `${privacyTodo.pending} people are`} asking to help you. Please choose what to share.`
+              : 'Please check who can see your information.'}
+          </p>
+          <button onClick={() => navigate('/my-privacy')}>Open My Privacy</button>
+        </div>
+      )}
 
       {/* Appointment Reminders */}
       {appointments.length > 0 && (
@@ -167,8 +188,8 @@ const PatientDashboard = () => {
             <div className="button-icon">
               <Camera size={64} strokeWidth={1.5} />
             </div>
-            <h3 className="button-title">My Memories</h3>
-            <p className="button-description">View and record your cherished memories</p>
+            <h3 className="button-title">My Photos</h3>
+            <p className="button-description">See your photos and listen to voice notes</p>
           </button>
 
           <button
@@ -179,8 +200,8 @@ const PatientDashboard = () => {
             <div className="button-icon">
               <MessageCircle size={64} strokeWidth={1.5} />
             </div>
-            <h3 className="button-title">Talk to Companion</h3>
-            <p className="button-description">Chat with Cara about your memories</p>
+            <h3 className="button-title">Talk with Cara</h3>
+            <p className="button-description">Ask about your memories, by voice or typing</p>
           </button>
 
           <button
@@ -198,13 +219,37 @@ const PatientDashboard = () => {
           <button
             className="action-button assess-button"
             onClick={() => navigate('/mood-assessment')}
-            aria-label="Assess your mood with camera"
+            aria-label="Optional mood camera"
           >
             <div className="button-icon">
               <Scan size={64} strokeWidth={1.5} />
             </div>
-            <h3 className="button-title">Assess Mood</h3>
-            <p className="button-description">Let your camera detect your mood</p>
+            <h3 className="button-title">Mood Camera</h3>
+            <p className="button-description">Optional: the camera makes a guess, you decide</p>
+          </button>
+
+          <button
+            className="action-button photos-button"
+            onClick={() => navigate('/memory-book')}
+            aria-label="Open your Memory Book"
+          >
+            <div className="button-icon">
+              <BookHeart size={64} strokeWidth={1.5} />
+            </div>
+            <h3 className="button-title">My Memory Book</h3>
+            <p className="button-description">People, places and your daily routine</p>
+          </button>
+
+          <button
+            className="action-button memory-button"
+            onClick={() => navigate('/my-privacy')}
+            aria-label="Choose who can see your information"
+          >
+            <div className="button-icon">
+              <ShieldCheck size={64} strokeWidth={1.5} />
+            </div>
+            <h3 className="button-title">My Privacy</h3>
+            <p className="button-description">Choose who can see your things</p>
           </button>
         </div>
 

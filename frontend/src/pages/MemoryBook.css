@@ -1,0 +1,26 @@
+.mb-container { max-width: 860px; margin: 0 auto; padding: 1.5rem 1rem 4rem; color: #2d1f3d; font-size: 1.1rem; line-height: 1.5; }
+.mb-container h1 { font-size: 2rem; margin: 1rem 0 0.25rem; color: #4a2f75; }
+.mb-container h2 { display: flex; align-items: center; gap: 0.5rem; font-size: 1.35rem; margin: 1.75rem 0 0.6rem; }
+.mb-intro { margin: 0 0 1rem; }
+.mb-back { display: inline-flex; align-items: center; gap: 0.4rem; min-height: 48px; padding: 0.5rem 1rem; border-radius: 12px; border: 2px solid #c9bfdc; background: #fff; font-size: 1.05rem; font-weight: 600; cursor: pointer; color: #2d1f3d; }
+.mb-message { background: #efe8fa; border-radius: 12px; padding: 0.7rem 1rem; font-weight: 600; color: #3b2560; }
+.mb-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.6rem; }
+.mb-item { display: flex; justify-content: space-between; gap: 1rem; background: #fff; border-radius: 14px; padding: 0.9rem 1.1rem; border: 1px solid #e6def2; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+.mb-title { font-weight: 700; font-size: 1.15rem; margin: 0; }
+.mb-content { margin: 0.2rem 0 0; }
+.mb-meta { margin: 0.2rem 0 0; color: #5b4a70; font-size: 1rem; }
+.mb-helper { margin: 0.4rem 0 0; background: #fff8e1; border: 1px solid #f0c36d; border-radius: 8px; padding: 0.2rem 0.6rem; display: inline-block; font-size: 1rem; }
+.mb-actions { display: flex; gap: 0.5rem; align-items: flex-start; flex-wrap: wrap; justify-content: flex-end; }
+.mb-btn { display: inline-flex; align-items: center; gap: 0.35rem; min-height: 48px; min-width: 48px; padding: 0.4rem 0.9rem; border-radius: 12px; border: 2px solid #5b3f8c; background: #fff; color: #3b2560; font-weight: 700; font-size: 1rem; cursor: pointer; justify-content: center; }
+.mb-btn-danger { border-color: #b71c1c; color: #b71c1c; }
+.mb-form { display: grid; gap: 0.8rem; background: #fff; border-radius: 16px; padding: 1.25rem; margin-top: 2rem; border: 2px solid #e6def2; }
+.mb-form label { display: grid; gap: 0.3rem; font-weight: 600; }
+.mb-form input, .mb-form textarea { font-size: 1.1rem; padding: 0.6rem 0.75rem; border-radius: 10px; border: 2px solid #c9bfdc; font-family: inherit; min-height: 48px; }
+.mb-optional { font-weight: 400; color: #5b4a70; }
+.mb-types { border: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.mb-types legend { font-weight: 700; margin-bottom: 0.5rem; }
+.mb-type { display: inline-flex !important; align-items: center; gap: 0.4rem; min-height: 48px; padding: 0.4rem 1rem; border-radius: 999px; border: 2px solid #c9bfdc; cursor: pointer; font-weight: 600 !important; }
+.mb-type.active { border-color: #5b3f8c; background: #efe8fa; }
+.mb-type input { width: 20px; height: 20px; min-height: 0; accent-color: #5b3f8c; }
+.mb-save { justify-self: start; min-height: 52px; padding: 0.6rem 2rem; border-radius: 12px; border: none; background: #5b3f8c; color: #fff; font-size: 1.15rem; font-weight: 700; cursor: pointer; }
+@media (max-width: 560px) { .mb-item { flex-direction: column; } .mb-actions { justify-content: flex-start; } }

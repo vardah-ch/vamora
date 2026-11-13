@@ -1,6 +1,7 @@
  import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
+import { mediaUrl } from '../services/media';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import './CaregiverDashboard.css';
 
@@ -10,6 +11,9 @@ export default function CaregiverDashboard() {
   const [loading, setLoading] = useState(true);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [patientDetails, setPatientDetails] = useState(null);
+  const [requestEmail, setRequestEmail] = useState('');
+  const [requestRelation, setRequestRelation] = useState('');
+  const [requestMsg, setRequestMsg] = useState('');
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [newNote, setNewNote] = useState('');
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -121,6 +125,18 @@ export default function CaregiverDashboard() {
     }
   };
 
+  const handleRequestAccess = async (e) => {
+    e.preventDefault();
+    try {
+      const { data } = await api.post('/caregiver/patients/add', { email: requestEmail.trim(), relationship: requestRelation.trim() });
+      setRequestMsg(data.message);
+      setRequestEmail(''); setRequestRelation('');
+      fetchPatients();
+    } catch (err) {
+      setRequestMsg(err.response?.data?.message || 'Could not send the request. Please try again.');
+    }
+  };
+
   const handleViewPatient = (patient) => {
     setSelectedPatient(patient);
     const pid = patient.patientId || patient.id;
@@ -140,7 +156,7 @@ export default function CaregiverDashboard() {
   };
 
   const handleDeleteNote = async (noteId) => {
-    if (!window.confirm('Delete this note?')) return;
+    if (!window.confirm('Withdraw this note? It will be hidden from the care team but kept in the care record.')) return;
     const pid = selectedPatient.patientId || selectedPatient.id;
     try {
       await api.delete(`/caregiver/notes/${noteId}`);
@@ -193,7 +209,7 @@ export default function CaregiverDashboard() {
   const alertPatients = patients.filter(p => p.hasAlert);
 
   const moodGraphData = patientDetails?.moods
-    ? [...patientDetails.moods].reverse().map(m => ({
+    ? [...(patientDetails.moods || [])].reverse().map(m => ({
         date: new Date(m.recordedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
         score: getMoodScore(m.mood),
         mood: m.mood
@@ -236,11 +252,11 @@ export default function CaregiverDashboard() {
           </div>
           <div className="cg-summary-item">
             <span className="cg-summary-label">Total Memories</span>
-            <span className="cg-summary-value">{patientDetails.photos.length} photos</span>
+            <span className="cg-summary-value">{patientDetails.photos ? `${patientDetails.photos.length} photos` : 'Not shared'}</span>
           </div>
           <div className="cg-summary-item">
             <span className="cg-summary-label">Appointments</span>
-            <span className="cg-summary-value">{patientDetails.appointments.length} scheduled</span>
+            <span className="cg-summary-value">{patientDetails.appointments ? `${patientDetails.appointments.length} scheduled` : 'Not shared'}</span>
           </div>
           {patientDetails.hasAlert && (
             <div className="cg-alert-badge">Needs Attention Today</div>
@@ -250,7 +266,9 @@ export default function CaregiverDashboard() {
         {/* Mood History + Graph */}
         <div className="cg-section">
           <h2 className="cg-section-title">Mood History</h2>
-          {patientDetails.moods.length === 0 ? (
+          {!patientDetails.moods ? (
+            <p className="cg-empty">{patientDetails.patient.name} has not shared their mood check-ins with you.</p>
+          ) : patientDetails.moods.length === 0 ? (
             <p className="cg-empty">No mood check-ins yet.</p>
           ) : (
             <>
@@ -302,7 +320,9 @@ export default function CaregiverDashboard() {
             <h2 className="cg-section-title">Appointments</h2>
             <span className="cg-readonly-badge">Set by Doctor</span>
           </div>
-          {patientDetails.appointments.length === 0 ? (
+          {!patientDetails.appointments ? (
+            <p className="cg-empty">Appointments are not shared with you.</p>
+          ) : patientDetails.appointments.length === 0 ? (
             <p className="cg-empty">No appointments scheduled.</p>
           ) : (
             <div className="cg-appointment-list">
@@ -365,7 +385,7 @@ export default function CaregiverDashboard() {
                     <p className="cg-note-text">{n.note}</p>
                     <p className="cg-note-date">{formatDate(n.createdAt)}</p>
                   </div>
-                  <button className="cg-delete-btn" onClick={() => handleDeleteNote(n.id)}>X</button>
+                  <button className="cg-delete-btn" aria-label="Withdraw note" title="Withdraw note" onClick={() => handleDeleteNote(n.id)}>Withdraw</button>
                 </div>
               ))}
             </div>
@@ -382,7 +402,7 @@ export default function CaregiverDashboard() {
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
               {patientDetails.photos.map(photo => {
-                const src = `http://localhost:5000/uploads/photos/${photo.filename}`;
+                const src = mediaUrl(photo.url);
                 return (
                   <div key={photo.id} style={{ borderRadius: '12px', overflow: 'hidden', background: '#f8f5ff', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
                     <img
@@ -512,11 +532,23 @@ export default function CaregiverDashboard() {
         <h2 className="cg-patients-title">My Patients</h2>
       </div>
 
+      <form className="cg-request-form" onSubmit={handleRequestAccess} aria-label="Ask to join a care team">
+        <p className="cg-empty-sub">Helping someone? Ask them to share their information with you. Nothing is shared until they agree.</p>
+        <label>Their email
+          <input type="email" required value={requestEmail} onChange={e => setRequestEmail(e.target.value)} />
+        </label>
+        <label>How you know them (optional)
+          <input type="text" maxLength={100} placeholder="e.g. daughter, neighbour" value={requestRelation} onChange={e => setRequestRelation(e.target.value)} />
+        </label>
+        <button type="submit" className="cg-view-btn">Send request</button>
+        {requestMsg && <p role="status" className="cg-empty-sub">{requestMsg}</p>}
+      </form>
+
       {patients.length === 0 ? (
         <div className="cg-empty-state">
           <div className="cg-empty-icon">👥</div>
           <p className="cg-empty-text">No patients assigned yet</p>
-          <p className="cg-empty-sub">Your doctor will assign patients to you.</p>
+          <p className="cg-empty-sub">A doctor can add you to a care team, or you can send a request above.</p>
         </div>
       ) : (
         <div className="cg-patients-grid">
@@ -533,14 +565,18 @@ export default function CaregiverDashboard() {
                 )}
               </div>
               <div className="cg-card-stats">
-                <span>{patient.photoCount} memories</span>
+                <span>{patient.photoCount === null || patient.photoCount === undefined ? 'Photos not shared' : `${patient.photoCount} memories`}</span>
                 <span style={{ color: getWellnessColor(patient.wellnessScore) }}>
-                  Wellness: {patient.wellnessScore ? `${patient.wellnessScore}/10` : 'N/A'}
+                  Mood (self-reported): {patient.wellnessScore ? `${patient.wellnessScore}/10` : 'N/A'}
                 </span>
               </div>
-              <button className="cg-view-btn" onClick={() => handleViewPatient(patient)}>
-                View Patient
-              </button>
+              {patient.grantStatus === 'pending' ? (
+                <p className="cg-empty" role="status">Waiting for {patient.name} to agree</p>
+              ) : (
+                <button className="cg-view-btn" onClick={() => handleViewPatient(patient)}>
+                  View Patient
+                </button>
+              )}
             </div>
           ))}
         </div>

@@ -17,9 +17,10 @@ function getMoodBarColor(mood) {
 }
 
 function getCognitiveStyle(status) {
-  if (status === 'Stable') return { background: '#43a047', color: '#fff' };
-  if (status === 'Needs Monitoring') return { background: '#fb8c00', color: '#fff' };
-  if (status === 'Declining') return { background: '#e53935', color: '#fff' };
+  // MMSE score bands (descriptive only; a single score is not a trend).
+  if (String(status).includes('24–30')) return { background: '#2e7d32', color: '#fff' };
+  if (String(status).includes('18–23')) return { background: '#b45309', color: '#fff' };
+  if (String(status).includes('0–17')) return { background: '#b71c1c', color: '#fff' };
   return { background: '#e0e0e0', color: '#757575' };
 }
 
@@ -147,13 +148,13 @@ export default function DoctorDashboard() {
 
   async function handleDeletePatient(patient, e) {
     e.stopPropagation();
-    if (!window.confirm(`Permanently delete ${patient.name} and all their data? This cannot be undone.`)) return;
+    if (!window.confirm(`Remove ${patient.name} from your patient list? Their account, memories and records will NOT be deleted.`)) return;
     try {
       setDeletingPatient(patient.id);
       await api.delete(`/doctor/patients/${patient.id}`);
       await loadOverview();
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to delete patient.');
+      alert(err.response?.data?.message || 'Could not remove this patient from your list.');
     } finally {
       setDeletingPatient(null);
     }
@@ -297,8 +298,8 @@ export default function DoctorDashboard() {
     }
   }
 
-  const decliningCount = patients.filter(p => p.cognitiveStatus === 'Declining').length;
-  const stableCount = patients.filter(p => p.cognitiveStatus === 'Stable').length;
+  const decliningCount = patients.filter(p => p.mmseTrend?.direction === 'lower').length;
+  const stableCount = patients.filter(p => p.mmseBand === '24–30').length;
   const alertPatients = patients.filter(p => p.hasAlert);
 
   const moodChartData = details?.moods
@@ -536,9 +537,10 @@ export default function DoctorDashboard() {
                   </div>
                 )}
                 <div className="doc-cog-legend">
-                  <span style={getCognitiveStyle('Stable')}>24–30 Stable</span>
-                  <span style={getCognitiveStyle('Needs Monitoring')}>18–23 Needs Monitoring</span>
-                  <span style={getCognitiveStyle('Declining')}>0–17 Declining</span>
+                  <span style={getCognitiveStyle('24–30')}>24–30</span>
+                  <span style={getCognitiveStyle('18–23')}>18–23</span>
+                  <span style={getCognitiveStyle('0–17')}>0–17</span>
+                  <span style={{ fontSize: '0.8rem', color: '#555' }}>Score bands only. Interpret change over time clinically.</span>
                 </div>
                 {mmseChartData.length === 0 ? (
                   <p className="doc-empty">No MMSE scores recorded yet.</p>
@@ -553,7 +555,7 @@ export default function DoctorDashboard() {
                             contentStyle={{ borderRadius: '10px', border: '1px solid #c8e6c9', fontSize: 13 }}
                             formatter={v => [`${v}/30`, 'MMSE Score']}
                           />
-                          <ReferenceLine y={24} stroke="#43a047" strokeDasharray="4 2" label={{ value: 'Stable', fill: '#43a047', fontSize: 11 }} />
+                          <ReferenceLine y={24} stroke="#43a047" strokeDasharray="4 2" label={{ value: '24', fill: '#2e7d32', fontSize: 11 }} />
                           <ReferenceLine y={18} stroke="#fb8c00" strokeDasharray="4 2" label={{ value: 'Monitoring', fill: '#fb8c00', fontSize: 11 }} />
                           <Line type="monotone" dataKey="score" stroke="#2e7d32" strokeWidth={2.5}
                             dot={{ fill: '#2e7d32', r: 5 }} activeDot={{ r: 7 }} />
@@ -568,8 +570,8 @@ export default function DoctorDashboard() {
                             <p className="doc-list-title">
                               Score: <strong>{s.score}/30</strong>
                               <span className="doc-cog-badge doc-cog-badge--sm"
-                                style={getCognitiveStyle(s.score >= 24 ? 'Stable' : s.score >= 18 ? 'Needs Monitoring' : 'Declining')}>
-                                {s.score >= 24 ? 'Stable' : s.score >= 18 ? 'Needs Monitoring' : 'Declining'}
+                                style={getCognitiveStyle(s.score >= 24 ? '24–30' : s.score >= 18 ? '18–23' : '0–17')}>
+                                {s.score >= 24 ? '24–30' : s.score >= 18 ? '18–23' : '0–17'}
                               </span>
                             </p>
                             <p className="doc-list-date">{formatDate(s.assessmentDate)}</p>
@@ -763,11 +765,11 @@ export default function DoctorDashboard() {
         </div>
         <div className="doc-stat-card">
           <p className="doc-stat-val" style={{ color: stableCount > 0 ? '#43a047' : '#757575' }}>{stableCount}</p>
-          <p className="doc-stat-lbl">Stable</p>
+          <p className="doc-stat-lbl">Latest MMSE 24–30</p>
         </div>
         <div className="doc-stat-card">
           <p className="doc-stat-val" style={{ color: decliningCount > 0 ? '#e53935' : '#757575' }}>{decliningCount}</p>
-          <p className="doc-stat-lbl">Declining</p>
+          <p className="doc-stat-lbl">Lower than previous MMSE (≥3 pts)</p>
         </div>
       </div>
 
@@ -780,7 +782,7 @@ export default function DoctorDashboard() {
               <div key={p.id} className="doc-alert-item">
                 <span className="doc-alert-name">{p.name}</span>
                 <span className="doc-alert-mood">
-                  {p.latestMoodEmoji} Feeling {p.latestMood} — Wellness {p.wellnessScore}/10
+                  {p.latestMoodEmoji} Feeling {p.latestMood} — self-reported mood {p.wellnessScore}/10
                 </span>
                 <button className="doc-view-btn-sm" onClick={() => openPatient(p)}>View</button>
               </div>
@@ -847,7 +849,7 @@ export default function DoctorDashboard() {
                   onClick={(e) => handleDeletePatient(p, e)}
                   disabled={deletingPatient === p.id}
                 >
-                  {deletingPatient === p.id ? '…' : 'Delete'}
+                  {deletingPatient === p.id ? '…' : 'Remove from list'}
                 </button>
               </div>
             </div>

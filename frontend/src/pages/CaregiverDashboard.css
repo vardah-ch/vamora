@@ -560,3 +560,8 @@
   font-weight: 700;
   color: #2e7d32;
 }
+/* Request-access form (consent flow) */
+.cg-request-form { display: grid; gap: 0.6rem; max-width: 520px; margin: 0 0 1.5rem; padding: 1rem 1.25rem; background: #fff; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+.cg-request-form label { display: grid; gap: 0.25rem; font-weight: 600; color: #2d1f3d; font-size: 0.95rem; }
+.cg-request-form input { padding: 0.6rem 0.75rem; border: 2px solid #c9bfdc; border-radius: 8px; font-size: 1rem; }
+.cg-request-form input:focus { outline: 3px solid #7b5ea7; outline-offset: 1px; }

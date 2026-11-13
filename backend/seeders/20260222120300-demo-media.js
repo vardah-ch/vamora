@@ -3,7 +3,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.bulkInsert('media', [
+    const rows = [
       {
         patient_id: 1, // Sarah Johnson
         media_type: 'photo',
@@ -70,7 +70,14 @@ module.exports = {
         created_at: new Date('2024-02-14'),
         updated_at: new Date('2024-02-14')
       }
-    ], {});
+    ];
+    // Only insert rows whose patient/user references exist (audit B2: the
+    // original rows referenced patients 2 and 3, which no seeder creates).
+    const q = (sql) => queryInterface.sequelize.query(sql, { type: queryInterface.sequelize.QueryTypes.SELECT });
+    const patients = new Set((await q('SELECT id FROM patients')).map(r => r.id));
+    const users = new Set((await q('SELECT id FROM users')).map(r => r.id));
+    const ok = rows.filter(r => patients.has(r.patient_id) && (r.uploaded_by === undefined || r.uploaded_by === null || users.has(r.uploaded_by)));
+    if (ok.length) await queryInterface.bulkInsert('media', ok, {});
   },
 
   async down(queryInterface, Sequelize) {

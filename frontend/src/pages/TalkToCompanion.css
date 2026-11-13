@@ -245,3 +245,20 @@
   .message-bubble { max-width: 85%; }
   .companion-title { font-size: 1.2rem; }
 }
+/* ── Grounded companion additions ───────────────────────────────────────── */
+.companion-header { flex-wrap: wrap; gap: 0.75rem; }
+.companion-back, .companion-tool-btn { display: inline-flex; align-items: center; gap: 0.35rem; min-height: 44px; padding: 0.4rem 0.8rem; border-radius: 10px; border: 2px solid #c9bfdc; background: #fff; color: #2d1f3d; font-size: 1rem; font-weight: 600; cursor: pointer; }
+.companion-tools { margin-left: auto; display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+.companion-lang select { min-height: 44px; font-size: 1rem; border-radius: 10px; border: 2px solid #c9bfdc; padding: 0 0.5rem; }
+.memory-sources { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.75rem; }
+.memory-source { margin: 0; background: #f6f2fc; border-radius: 12px; overflow: hidden; width: 150px; border: 1px solid #ddd2ee; }
+.memory-source img { width: 100%; height: 100px; object-fit: cover; display: block; }
+.memory-source figcaption { padding: 0.4rem 0.55rem; font-size: 0.95rem; font-weight: 600; color: #2d1f3d; }
+.memory-source-note { display: block; font-weight: 400; font-size: 0.85rem; color: #6b5b7f; }
+.grounding-note { margin-top: 0.5rem; font-size: 0.95rem; color: #5b4a70; font-style: italic; }
+.speak-btn { margin-top: 0.4rem; display: inline-flex; align-items: center; gap: 0.3rem; background: none; border: 1px solid #c9bfdc; border-radius: 8px; padding: 0.25rem 0.6rem; cursor: pointer; color: #4a3a60; font-size: 0.95rem; min-height: 36px; }
+.mic-btn { min-width: 60px; min-height: 60px; border-radius: 50%; border: none; background: #7b5ea7; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.mic-btn.listening { background: #b71c1c; animation: mic-pulse 1.2s infinite; }
+@keyframes mic-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(183,28,28,0.5); } 50% { box-shadow: 0 0 0 10px rgba(183,28,28,0); } }
+@media (prefers-reduced-motion: reduce) { .mic-btn.listening { animation: none; } }
+.send-btn { min-width: 80px; font-size: 1.05rem; font-weight: 700; }
