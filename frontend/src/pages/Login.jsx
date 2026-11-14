@@ -8,7 +8,9 @@ import './Login.css';
 
 const ROLE_HOME = { patient: '/patient-dashboard', caregiver: '/caregiver-dashboard', doctor: '/doctor-dashboard', super_admin: '/super-admin' };
 
-// Demo accounts are shown only in development builds.
+// Demo accounts: shown in development, or on a public demo build (VITE_DEMO_MODE=true)
+// whose database holds only fictional, synthetic data.
+const SHOW_DEMO = import.meta.env.DEV || import.meta.env.VITE_DEMO_MODE === 'true';
 const DEMO = [
   { role: 'Patient', email: 'sarah.patient@vamora.com', password: 'password123' },
   { role: 'Caregiver', email: 'amna.caregiver@vamora.com', password: 'password123' },
@@ -105,9 +107,9 @@ const Login = () => {
             </button>
           </form>
 
-          {import.meta.env.DEV && (
+          {SHOW_DEMO && (
             <div className="demo">
-              <p className="demo-head">Demo accounts <span>development only</span></p>
+              <p className="demo-head">Demo accounts <span>{import.meta.env.DEV ? 'development only' : 'fictional data · try any role'}</span></p>
               <div className="demo-list">
                 {DEMO.map(d => (
                   <button key={d.email} type="button" className="demo-chip"

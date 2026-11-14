@@ -3,7 +3,8 @@ const bcrypt = require('bcryptjs');
 
 // Default credential — change immediately after first login in production.
 const ADMIN_EMAIL    = 'admin@vamora.hospital';
-const ADMIN_PASSWORD = 'Admin@Vamora2026!';
+// Set SUPER_ADMIN_PASSWORD on any public deployment; the default is for local development only.
+const ADMIN_PASSWORD = process.env.SUPER_ADMIN_PASSWORD || 'Admin@Vamora2026!';
 
 module.exports = {
   async up(queryInterface) {

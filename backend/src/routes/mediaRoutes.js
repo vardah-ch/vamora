@@ -6,7 +6,7 @@ const db = require('../../models');
 const mediaService = require('../services/mediaService');
 const ac = require('../services/accessControl');
 const audit = require('../services/auditService');
-const { resolveStoredFile } = require('../middlewares/upload');
+const { resolveStoredFile, loadFromDb } = require('../middlewares/upload');
 
 /**
  * Authorised media streaming (audit S6). Base: /api/v1/media
@@ -53,15 +53,19 @@ async function serve(kind, req, res) {
     return deny(res, 403);
   }
 
-  const file = resolveStoredFile(kind === 'photo' ? photo.filename : photo.voiceNoteUrl);
-  if (!file || !fs.existsSync(file)) return deny(res);
+  const stored = kind === 'photo' ? photo.filename : photo.voiceNoteUrl;
+  const file = resolveStoredFile(stored);
+  const onDisk = !!file && fs.existsSync(file);
+  const blob = onDisk ? null : await loadFromDb(stored);
+  if (!onDisk && !blob) return deny(res);
   if (!self) {
     await audit.record(ctx, { action: `media.${kind}.view`, resourceType: 'photo', resourceId: photo.id, patientUserId: photo.patientId, accessBasis: access.basis, grantId: access.grantId });
   }
   res.setHeader('Cache-Control', 'private, max-age=300');
   res.setHeader('Content-Disposition', 'inline');
   const mime = kind === 'photo' ? photo.mimeType : photo.voiceNoteMime;
-  if (mime) res.type(mime);
+  if (mime || blob?.mime) res.type(mime || blob.mime);
+  if (blob) return res.send(blob.data);
   res.sendFile(file);
 }
 

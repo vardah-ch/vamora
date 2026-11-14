@@ -1,5 +1,8 @@
 require('dotenv').config({ quiet: true });
 
+// Hosted Postgres (Neon, Vercel, Render…) usually provides one connection string.
+const DB_URL_VAR = ['DATABASE_URL', 'POSTGRES_URL'].find(k => process.env[k]);
+
 module.exports = {
   development: {
     username: process.env.DB_USER || 'vamora_user',
@@ -26,6 +29,11 @@ module.exports = {
     logging: false
   },
   production: {
+    ...(DB_URL_VAR ? { use_env_variable: DB_URL_VAR } : {}),
+    // Explicit driver so serverless bundlers include it.
+    dialectModule: require('pg'),
+    // Record which seeders have run, so `db:seed:all` is safe to repeat on deploy.
+    seederStorage: 'sequelize',
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
@@ -33,7 +41,8 @@ module.exports = {
     port: process.env.DB_PORT,
     dialect: 'postgres',
     logging: false,
-    dialectOptions: {
+    // TLS is required for hosted databases; DB_SSL=false only for a local rehearsal.
+    dialectOptions: process.env.DB_SSL === 'false' ? {} : {
       ssl: {
         require: true,
         rejectUnauthorized: false
@@ -41,7 +50,7 @@ module.exports = {
     },
     pool: {
       max: 10,
-      min: 2,
+      min: 0,
       acquire: 30000,
       idle: 10000
     }

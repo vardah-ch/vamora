@@ -83,11 +83,35 @@ function verifyStoredFile(kind) {
       req.file.filename = finalName;
       req.file.path = finalPath;
       req.file.detectedMime = match.mime;
+      if (DB_STORE) await saveToDb(finalName, match.mime, finalPath);
       next();
     } catch (e) {
       next(e);
     }
   };
+}
+
+/**
+ * MEDIA_STORE=db keeps file bytes in PostgreSQL (table media_blobs) instead of
+ * on local disk. Needed on serverless hosts whose filesystem is temporary.
+ * Access control is unchanged: bytes are only served through /api/v1/media.
+ */
+const DB_STORE = process.env.MEDIA_STORE === 'db';
+async function saveToDb(name, mime, filePath) {
+  const db = require('../../models');
+  const data = await fs.promises.readFile(filePath);
+  await db.sequelize.query(
+    'INSERT INTO media_blobs (name, mime, data, created_at) VALUES (:name, :mime, :data, NOW())',
+    { replacements: { name, mime, data } }
+  );
+  await fs.promises.unlink(filePath).catch(() => {});
+}
+async function loadFromDb(storedName) {
+  if (!DB_STORE || !storedName) return null;
+  const db = require('../../models');
+  const [row] = await db.sequelize.query('SELECT mime, data FROM media_blobs WHERE name = :name LIMIT 1',
+    { replacements: { name: path.basename(String(storedName)) }, type: db.sequelize.QueryTypes.SELECT });
+  return row || null;
 }
 
 const imageUpload = (field) => [makeUploader('image').single(field), verifyStoredFile('image')];
@@ -107,4 +131,4 @@ async function discardUpload(req) {
   if (req.file?.path) await fs.promises.unlink(req.file.path).catch(() => {});
 }
 
-module.exports = { imageUpload, audioUpload, resolveStoredFile, discardUpload, PHOTO_DIR, UPLOAD_ROOT };
+module.exports = { imageUpload, audioUpload, resolveStoredFile, loadFromDb, discardUpload, PHOTO_DIR, UPLOAD_ROOT };

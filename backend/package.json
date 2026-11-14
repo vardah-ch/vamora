@@ -14,7 +14,8 @@
     "test:coverage": "jest --runInBand --coverage",
     "eval:retrieval": "node eval/runRetrievalEval.js",
     "eval:companion": "node eval/runCompanionEval.js",
-    "db:seed:demo": "sequelize db:seed --seed 20261113000000-demo-care-team.js"
+    "db:seed:demo": "sequelize db:seed --seed 20261113000000-demo-care-team.js",
+    "vercel-build": "sequelize db:migrate && sequelize db:seed:all"
   },
   "keywords": [
     "alzheimers",

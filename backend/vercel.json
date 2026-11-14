@@ -1,0 +1,11 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm run vercel-build",
+  "rewrites": [{ "source": "/(.*)", "destination": "/api" }],
+  "functions": {
+    "api/index.js": {
+      "maxDuration": 30,
+      "excludeFiles": "{node_modules/onnxruntime-node/**,node_modules/onnxruntime-web/**,node_modules/@huggingface/**,node_modules/sharp/**,node_modules/@img/**,node_modules/embedded-postgres/**,node_modules/@embedded-postgres/**,test/**,eval/**,.model-cache/**}"
+    }
+  }
+}
