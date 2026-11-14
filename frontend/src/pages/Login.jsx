@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { AlertCircle, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { Logo } from '../components/Glyphs';
+import { CREATOR } from '../config/creator';
 import './Login.css';
 
 const ROLE_HOME = { patient: '/patient-dashboard', caregiver: '/caregiver-dashboard', doctor: '/doctor-dashboard', super_admin: '/super-admin' };
@@ -59,7 +60,7 @@ const Login = () => {
             <figure className="polaroid p3"><div className="ph ph-c" /><figcaption>Amna — my daughter</figcaption></figure>
           </div>
         </div>
-        <p className="auth-foot">Built for people living with dementia, their families and care teams.</p>
+        <p className="auth-foot">Created by <strong>{CREATOR.name}</strong> · <a href={`mailto:${CREATOR.email}`}>{CREATOR.email}</a></p>
       </aside>
 
       {/* ── Form side ── */}
@@ -112,6 +113,7 @@ const Login = () => {
               </div>
             </div>
           )}
+          <p className="auth-credit"><Link to="/">About VAMORA</Link> · Created by {CREATOR.name} · Research prototype, not a medical device</p>
         </div>
       </main>
     </div>

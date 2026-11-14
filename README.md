@@ -1,10 +1,12 @@
 # VAMORA — Virtual Alzheimer's Memory & Observation Recall Assistant
 
+*Created by Vardah Ahmad · Research prototype · Not a medical device*
+
 VAMORA is a web application that helps people living with Alzheimer's-type memory difficulties, their family caregivers and their doctors. It holds personal memories (photos, voice notes, people, places, events and daily routines) and care observations. A companion, *Cara*, answers questions **only from the person's own saved memories** and says when it does not know.
 
 > **Not a medical device.** VAMORA does not diagnose, treat or monitor any condition and has not been clinically evaluated. All evaluation data in this repository is synthetic.
 
-Originally developed by **Vardah Ahmad** and **Amna Khan** as a Computer Science Final Year Project at the University of Gujrat, Pakistan. The `research-hardening` branch adds the security, privacy, AI and research work described in [`docs/`](docs). The original state is preserved at tag `pre-research-baseline`.
+**Created by Vardah Ahmad** (wardahch70@gmail.com), Department of Computer Science, University of Gujrat, Pakistan. The original student version was a Final Year Project co-developed with Amna Khan; the research version adds AI-assisted engineering, privacy and evaluation work. The `research-hardening` branch adds the security, privacy, AI and research work described in [`docs/`](docs). The original state is preserved at tag `pre-research-baseline`.
 
 ## Features
 | Area | What it does |

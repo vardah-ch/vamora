@@ -78,3 +78,9 @@
   .auth-story { display: none; }
   .auth-mobile-logo { display: block; }
 }
+.auth-foot strong { color: #fbf8f2; }
+.auth-foot a { color: #f2c9b2; font-weight: 700; text-decoration: none; }
+.auth-foot a:hover { text-decoration: underline; }
+.auth-credit { margin-top: 28px; font-size: 0.88rem; color: var(--ink-3); text-align: center; }
+.auth-credit a { color: var(--primary); font-weight: 700; text-decoration: none; }
+.auth-credit a:hover { text-decoration: underline; }
