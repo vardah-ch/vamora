@@ -7,6 +7,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useSpeech } from '../hooks/useSpeech';
 import { usePreferences } from '../hooks/usePreferences';
 import './TalkToCompanion.css';
+import { Logo } from '../components/Glyphs';
 
 /**
  * Talk with Cara. Design choices (see docs/ARCHITECTURE.md §HCI):
@@ -109,7 +110,7 @@ export default function TalkToCompanion() {
         <button className="companion-back" onClick={() => navigate('/patient-dashboard')} aria-label="Back to home">
           <ArrowLeft size={22} /> Home
         </button>
-        <div className="companion-avatar" aria-hidden="true">💬</div>
+        <div className="companion-avatar" aria-hidden="true"><Logo size={30} withWord={false} /></div>
         <div className="companion-info">
           <h1 className="companion-title">Talk with Cara</h1>
           <p className="companion-status">A computer helper for your memories</p>
@@ -135,7 +136,7 @@ export default function TalkToCompanion() {
       <div className="messages-container" aria-live="polite">
         {messages.map((msg, index) => (
           <div key={index} className={`message-wrapper ${msg.role === 'user' ? 'user-wrapper' : 'ai-wrapper'}`}>
-            {msg.role === 'assistant' && <div className="ai-avatar" aria-hidden="true">💬</div>}
+            {msg.role === 'assistant' && <div className="ai-avatar" aria-hidden="true"><Logo size={20} withWord={false} /></div>}
             <div className={`message-bubble ${msg.role === 'user' ? 'user-bubble' : 'ai-bubble'}`}>
               <p>{msg.content}</p>
               {msg.role === 'assistant' && msg.sources?.length > 0 && (
@@ -163,7 +164,7 @@ export default function TalkToCompanion() {
         ))}
         {loading && (
           <div className="message-wrapper ai-wrapper" role="status" aria-label="Cara is thinking">
-            <div className="ai-avatar" aria-hidden="true">💬</div>
+            <div className="ai-avatar" aria-hidden="true"><Logo size={20} withWord={false} /></div>
             <div className="message-bubble ai-bubble typing-bubble"><span></span><span></span><span></span></div>
           </div>
         )}

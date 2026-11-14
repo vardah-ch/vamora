@@ -5,16 +5,18 @@ import { ArrowLeft, Camera, X, CheckCircle, RefreshCw, Send } from 'lucide-react
 import api from '../services/api';
 import { usePreferences } from '../hooks/usePreferences';
 import './MoodAssessment.css';
+import { ScanFace, AlertTriangle, CameraOff } from 'lucide-react';
+import { MoodGlyph } from '../components/Glyphs';
 
 // Keys match the expression labels returned by face-api.js exactly
 const EXPRESSION_MAP = {
-  happy:     { label: 'Happy',      emoji: '😊', color: '#f9a825' },
-  neutral:   { label: 'Neutral',    emoji: '😐', color: '#757575' },
-  sad:       { label: 'Sad',        emoji: '😔', color: '#5c6bc0' },
-  fearful:   { label: 'Anxious',    emoji: '😰', color: '#ef6c00' },
-  surprised: { label: 'Surprised',  emoji: '😮', color: '#8e24aa' },
-  angry:     { label: 'Frustrated', emoji: '😡', color: '#e53935' },
-  disgusted: { label: 'Disgusted',  emoji: '🤢', color: '#558b2f' },
+  happy:     { label: 'Happy',      emoji: <MoodGlyph expression="happy" size={18} />, color: '#2e6b4e' },
+  neutral:   { label: 'Neutral',    emoji: <MoodGlyph expression="neutral" size={18} />, color: '#2c5a7a' },
+  sad:       { label: 'Sad',        emoji: <MoodGlyph expression="sad" size={18} />, color: '#3f5a86' },
+  fearful:   { label: 'Anxious',    emoji: <MoodGlyph expression="fearful" size={18} />, color: '#9a5317' },
+  surprised: { label: 'Surprised',  emoji: <MoodGlyph expression="surprised" size={18} />, color: '#8f5b0f' },
+  angry:     { label: 'Frustrated', emoji: <MoodGlyph expression="angry" size={18} />, color: '#a33a2c' },
+  disgusted: { label: 'Disgusted',  emoji: <MoodGlyph expression="disgusted" size={18} />, color: '#a33a2c' },
 };
 
 // Maps face-api expression labels → mood values accepted by the /moods backend
@@ -95,10 +97,10 @@ async function detectMoodFromDataUrl(dataUrl) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const MOOD_CHOICES = [
-  { value: 'happy', label: 'Happy', emoji: '😊' }, { value: 'calm', label: 'Calm', emoji: '😌' },
-  { value: 'sad', label: 'Sad', emoji: '😔' }, { value: 'anxious', label: 'Worried', emoji: '😰' },
-  { value: 'frustrated', label: 'Frustrated', emoji: '😡' }, { value: 'tired', label: 'Tired', emoji: '😴' },
-  { value: 'excited', label: 'Excited', emoji: '🤩' }, { value: 'confused', label: 'Confused', emoji: '😕' }
+  { value: 'happy', label: 'Happy', emoji: <MoodGlyph mood="happy" size={20} /> }, { value: 'calm', label: 'Calm', emoji: <MoodGlyph mood="calm" size={20} /> },
+  { value: 'sad', label: 'Sad', emoji: <MoodGlyph mood="sad" size={20} /> }, { value: 'anxious', label: 'Worried', emoji: <MoodGlyph mood="anxious" size={20} /> },
+  { value: 'frustrated', label: 'Frustrated', emoji: <MoodGlyph mood="frustrated" size={20} /> }, { value: 'tired', label: 'Tired', emoji: <MoodGlyph mood="tired" size={20} /> },
+  { value: 'excited', label: 'Excited', emoji: <MoodGlyph mood="excited" size={20} /> }, { value: 'confused', label: 'Confused', emoji: <MoodGlyph mood="confused" size={20} /> }
 ];
 
 /**
@@ -293,7 +295,7 @@ export default function MoodAssessment() {
           <ArrowLeft size={20} /> Back
         </button>
         <div className="ma-header-body">
-          <span className="ma-header-icon">🧠</span>
+          <span className="ma-header-icon"><ScanFace size={28} strokeWidth={1.6} /></span>
           <div>
             <h1 className="ma-title">Mood Assessment</h1>
             <p className="ma-subtitle">An optional guess from your face. You choose how you feel.</p>
@@ -317,7 +319,7 @@ export default function MoodAssessment() {
 
         {cameraState === 'idle' && modelError && (
           <div className="ma-denied">
-            <p className="ma-denied-icon">⚠️</p>
+            <p className="ma-denied-icon"><AlertTriangle size={30} /></p>
             <p className="ma-denied-msg">Models failed to load</p>
             <p className="ma-denied-sub">{modelError}</p>
           </div>
@@ -358,7 +360,7 @@ export default function MoodAssessment() {
 
         {cameraState === 'denied' && (
           <div className="ma-denied">
-            <p className="ma-denied-icon">📷</p>
+            <p className="ma-denied-icon"><CameraOff size={30} /></p>
             <p className="ma-denied-msg">Camera access was denied.</p>
             <p className="ma-denied-sub">
               Please allow camera access in your browser settings, then try again.
@@ -408,7 +410,7 @@ export default function MoodAssessment() {
 
                 {imageError && (
                   <div className="ma-image-error">
-                    <span className="ma-image-error-icon">⚠️</span>
+                    <span className="ma-image-error-icon"><AlertTriangle size={18} /></span>
                     <span>{imageError}</span>
                   </div>
                 )}
@@ -461,7 +463,7 @@ export default function MoodAssessment() {
         <div style={{
           position: 'fixed', bottom: '2rem', left: '50%',
           transform: 'translateX(-50%)',
-          background: savedToast === 'db' ? '#2e7d32' : '#f57c00',
+          background: savedToast === 'db' ? '#2e6b4e' : '#9a5f12',
           color: 'white', borderRadius: '12px',
           padding: '0.7rem 1.4rem', fontWeight: 600, fontSize: '0.95rem',
           boxShadow: '0 4px 18px rgba(0,0,0,0.22)',

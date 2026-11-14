@@ -7,20 +7,21 @@ import {
   Plus, Eye, EyeOff, LogOut, X, CheckCircle
 } from 'lucide-react';
 import './SuperAdminDashboard.css';
+import { UserRound, HeartHandshake, Stethoscope } from 'lucide-react';
 
 const roleBadgeStyle = (role) => {
   const map = {
-    patient:     { background: '#e3f2fd', color: '#1565c0' },
-    caregiver:   { background: '#e8f5e9', color: '#2e7d32' },
-    doctor:      { background: '#f3e5f5', color: '#4a148c' },
-    super_admin: { background: '#fff3e0', color: '#e65100' },
+    patient:     { background: '#e3edf4', color: '#2c5a7a' },
+    caregiver:   { background: '#e3efe7', color: '#2e6b4e' },
+    doctor:      { background: '#e6efeb', color: '#1f4d45' },
+    super_admin: { background: '#f7e7de', color: '#b9572f' },
   };
-  return map[role] || { background: '#f5f5f5', color: '#616161' };
+  return map[role] || { background: '#f2eee7', color: '#6b736d' };
 };
 
 const roleEmoji = (role) => {
-  const map = { patient: '🧠', caregiver: '🤝', doctor: '🩺', super_admin: '🛡️' };
-  return map[role] || '👤';
+  const map = { patient: <UserRound size={18} />, caregiver: <HeartHandshake size={18} />, doctor: <Stethoscope size={18} />, super_admin: <Shield size={18} /> };
+  return map[role] || <UserRound size={18} />;
 };
 
 const formatDate = (d) => {
@@ -404,8 +405,8 @@ const SuperAdminDashboard = () => {
                               onClick={() => handleDeleteUser(u)}
                               disabled={deletingId === u.id}
                               style={{
-                                background: '#ffebee', color: '#c62828',
-                                border: '1.5px solid #ef9a9a', borderRadius: '8px',
+                                background: '#f6e2de', color: '#a33a2c',
+                                border: '1.5px solid #e9c2bb', borderRadius: '8px',
                                 padding: '0.3rem 0.7rem', fontSize: '0.8rem',
                                 fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap',
                                 opacity: deletingId === u.id ? 0.5 : 1,
@@ -430,7 +431,7 @@ const SuperAdminDashboard = () => {
             <div className="sa-section-header">
               <div>
                 <h2 className="sa-section-title" style={{ marginBottom: 0 }}>Activity Logs</h2>
-                <p style={{ margin: '0.2rem 0 0', fontSize: '0.82rem', color: '#9e9e9e' }}>
+                <p style={{ margin: '0.2rem 0 0', fontSize: '0.82rem', color: '#9aa19b' }}>
                   Last 50 user registrations
                 </p>
               </div>
@@ -480,7 +481,7 @@ const SuperAdminDashboard = () => {
             <div className="sa-section-header">
               <div>
                 <h2 className="sa-section-title" style={{ marginBottom: 0 }}>Doctor Access Control</h2>
-                <p style={{ margin: '0.2rem 0 0', fontSize: '0.82rem', color: '#9e9e9e' }}>
+                <p style={{ margin: '0.2rem 0 0', fontSize: '0.82rem', color: '#9aa19b' }}>
                   Lock or unlock doctor portal access
                 </p>
               </div>
@@ -505,7 +506,7 @@ const SuperAdminDashboard = () => {
                     className={`sa-doctor-card${doc.isLocked ? ' sa-doctor-card--locked' : ''}`}
                   >
                     {doc.isLocked && <div className="sa-locked-chip">LOCKED</div>}
-                    <div className="sa-doctor-avatar">🩺</div>
+                    <div className="sa-doctor-avatar"><Stethoscope size={20} /></div>
                     <p className="sa-doctor-name">{doc.name || '—'}</p>
                     <p className="sa-doctor-email">{doc.email}</p>
                     <div className={`sa-doctor-status ${doc.isLocked ? 'sa-status--locked' : 'sa-status--active'}`}>
@@ -537,7 +538,7 @@ const SuperAdminDashboard = () => {
             <div className="sa-section-header">
               <div>
                 <h2 className="sa-section-title" style={{ marginBottom: 0 }}>Caregiver Access Control</h2>
-                <p style={{ margin: '0.2rem 0 0', fontSize: '0.82rem', color: '#9e9e9e' }}>
+                <p style={{ margin: '0.2rem 0 0', fontSize: '0.82rem', color: '#9aa19b' }}>
                   Lock or unlock caregiver portal access
                 </p>
               </div>
@@ -562,7 +563,7 @@ const SuperAdminDashboard = () => {
                     className={`sa-doctor-card${cg.isLocked ? ' sa-doctor-card--locked' : ''}`}
                   >
                     {cg.isLocked && <div className="sa-locked-chip">LOCKED</div>}
-                    <div className="sa-doctor-avatar">🤝</div>
+                    <div className="sa-doctor-avatar"><HeartHandshake size={20} /></div>
                     <p className="sa-doctor-name">{cg.name || '—'}</p>
                     <p className="sa-doctor-email">{cg.email}</p>
                     <div className={`sa-doctor-status ${cg.isLocked ? 'sa-status--locked' : 'sa-status--active'}`}>

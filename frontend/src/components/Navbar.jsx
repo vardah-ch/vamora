@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, LogOut, Brain, Heart } from 'lucide-react';
+import { ArrowLeft, LogOut } from 'lucide-react';
+import { Logo } from './Glyphs';
 import { useAuth } from '../contexts/AuthContext';
 import NotificationBell from './NotificationBell';
 import './Navbar.css';
@@ -38,9 +39,7 @@ const Navbar = () => {
         )}
 
         <div className="navbar-brand">
-          <Brain size={24} className="brand-icon" />
-          <Heart size={16} className="brand-heart" fill="currentColor" />
-          <span className="brand-text">Vamora</span>
+          <Logo size={26} />
         </div>
       </div>
 
@@ -50,7 +49,7 @@ const Navbar = () => {
             <NotificationBell />
             <div className="user-badge">
               <span className="user-name">{user.profile?.name || user.email}</span>
-              <span className="user-role">{user.role}</span>
+              <span className="user-role">{user.role.replace('_', ' ')}</span>
             </div>
             <button onClick={handleLogout} className="nav-button logout-button" title="Logout">
               <LogOut size={20} />

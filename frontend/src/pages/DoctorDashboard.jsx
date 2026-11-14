@@ -6,29 +6,31 @@ import {
   BarChart, Bar, Cell
 } from 'recharts';
 import './DoctorDashboard.css';
+import { CalendarDays, Pill, Activity, NotebookPen, Stethoscope, Users, HeartHandshake, Phone } from 'lucide-react';
+import { MoodGlyph, Initials } from '../components/Glyphs';
 
-const MOOD_EMOJI = { happy: '😊', calm: '😌', sad: '😔', anxious: '😰', frustrated: '😡', tired: '😴', excited: '🤩', confused: '😕' };
+
 const MOOD_SCORES = { happy: 10, excited: 10, calm: 8, tired: 5, confused: 4, anxious: 3, frustrated: 3, sad: 2 };
 
 function getMoodBarColor(mood) {
-  if (['happy', 'excited', 'calm'].includes(mood)) return '#43a047';
-  if (['tired', 'confused'].includes(mood)) return '#fb8c00';
-  return '#e53935';
+  if (['happy', 'excited', 'calm'].includes(mood)) return '#2e6b4e';
+  if (['tired', 'confused'].includes(mood)) return '#9a5f12';
+  return '#a33a2c';
 }
 
 function getCognitiveStyle(status) {
   // MMSE score bands (descriptive only; a single score is not a trend).
-  if (String(status).includes('24–30')) return { background: '#2e7d32', color: '#fff' };
-  if (String(status).includes('18–23')) return { background: '#b45309', color: '#fff' };
-  if (String(status).includes('0–17')) return { background: '#b71c1c', color: '#fff' };
-  return { background: '#e0e0e0', color: '#757575' };
+  if (String(status).includes('24–30')) return { background: '#2e6b4e', color: '#fff' };
+  if (String(status).includes('18–23')) return { background: '#8f5b0f', color: '#fff' };
+  if (String(status).includes('0–17')) return { background: '#a33a2c', color: '#fff' };
+  return { background: '#ddd5c8', color: '#6b736d' };
 }
 
 function getWellnessColor(score) {
-  if (!score) return '#94a3b8';
-  if (score >= 7) return '#43a047';
-  if (score >= 4) return '#fb8c00';
-  return '#e53935';
+  if (!score) return '#9aa19b';
+  if (score >= 7) return '#2e6b4e';
+  if (score >= 4) return '#9a5f12';
+  return '#a33a2c';
 }
 
 function formatDate(iso) {
@@ -40,7 +42,8 @@ function formatDateTime(iso) {
 
 export default function DoctorDashboard() {
   const { user } = useAuth();
-  const doctorName = user?.profile?.name?.split(' ')[0]
+  // Skip a leading title so 'Dr. Sarah Malik' becomes 'Sarah' (heading adds 'Dr.').
+  const doctorName = user?.profile?.name?.replace(/^\s*(dr\.?|doctor)\s+/i, '').split(' ')[0]
     || user?.email?.split('@')[0]?.split('.')?.[0] || 'Doctor';
   const displayName = doctorName.charAt(0).toUpperCase() + doctorName.slice(1);
 
@@ -354,7 +357,7 @@ export default function DoctorDashboard() {
               ))}
             </select>
             {assignError && <p className="doc-error">{assignError}</p>}
-            {assignSuccess && <p style={{ color: '#43a047', fontWeight: 600, marginTop: '0.5rem' }}>{assignSuccess}</p>}
+            {assignSuccess && <p style={{ color: '#2e6b4e', fontWeight: 600, marginTop: '0.5rem' }}>{assignSuccess}</p>}
             <button className="doc-save-btn" onClick={handleAssignCaregiver} disabled={assigning}>
               {assigning ? 'Assigning…' : 'Assign Caregiver'}
             </button>
@@ -401,11 +404,11 @@ export default function DoctorDashboard() {
                   className={`doc-detail-tab ${activeDetailTab === tab ? 'doc-detail-tab--active' : ''}`}
                   onClick={() => setActiveDetailTab(tab)}
                 >
-                  {tab === 'appointments' && '📋 Appointments'}
-                  {tab === 'medications' && '💊 Medications'}
-                  {tab === 'mmse' && '🧠 MMSE Scores'}
-                  {tab === 'mood' && '😊 Mood History'}
-                  {tab === 'notes' && '📝 Care Notes'}
+                  {tab === 'appointments' && 'Appointments'}
+                  {tab === 'medications' && 'Medications'}
+                  {tab === 'mmse' && 'MMSE scores'}
+                  {tab === 'mood' && 'Mood history'}
+                  {tab === 'notes' && 'Care notes'}
                 </button>
               ))}
             </div>
@@ -443,7 +446,7 @@ export default function DoctorDashboard() {
                   <div className="doc-list">
                     {details.appointments.map(a => (
                       <div key={a.id} className="doc-list-item">
-                        <div className="doc-list-icon">📋</div>
+                        <div className="doc-list-icon"><CalendarDays size={18} /></div>
                         <div className="doc-list-body">
                           <p className="doc-list-title">{a.title}</p>
                           {a.doctorName && <p className="doc-list-sub">{a.doctorName}</p>}
@@ -494,7 +497,7 @@ export default function DoctorDashboard() {
                   <div className="doc-list">
                     {details.medications.map(m => (
                       <div key={m.id} className="doc-list-item">
-                        <div className="doc-list-icon">💊</div>
+                        <div className="doc-list-icon"><Pill size={18} /></div>
                         <div className="doc-list-body">
                           <p className="doc-list-title">{m.medicationName}</p>
                           {m.dosage && <p className="doc-list-sub">Dose: {m.dosage}</p>}
@@ -549,23 +552,23 @@ export default function DoctorDashboard() {
                     <div className="doc-chart-wrap">
                       <ResponsiveContainer width="100%" height={240}>
                         <LineChart data={mmseChartData} margin={{ top: 10, right: 16, left: -10, bottom: 0 }}>
-                          <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#90a4ae' }} />
-                          <YAxis domain={[0, 30]} tick={{ fontSize: 11, fill: '#90a4ae' }} />
+                          <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#9aa19b' }} />
+                          <YAxis domain={[0, 30]} tick={{ fontSize: 11, fill: '#9aa19b' }} />
                           <Tooltip
-                            contentStyle={{ borderRadius: '10px', border: '1px solid #c8e6c9', fontSize: 13 }}
+                            contentStyle={{ borderRadius: '10px', border: '1px solid #cfe0d9', fontSize: 13 }}
                             formatter={v => [`${v}/30`, 'MMSE Score']}
                           />
-                          <ReferenceLine y={24} stroke="#43a047" strokeDasharray="4 2" label={{ value: '24', fill: '#2e7d32', fontSize: 11 }} />
-                          <ReferenceLine y={18} stroke="#fb8c00" strokeDasharray="4 2" label={{ value: 'Monitoring', fill: '#fb8c00', fontSize: 11 }} />
-                          <Line type="monotone" dataKey="score" stroke="#2e7d32" strokeWidth={2.5}
-                            dot={{ fill: '#2e7d32', r: 5 }} activeDot={{ r: 7 }} />
+                          <ReferenceLine y={24} stroke="#2e6b4e" strokeDasharray="4 2" label={{ value: '24', fill: '#2e6b4e', fontSize: 11 }} />
+                          <ReferenceLine y={18} stroke="#9a5f12" strokeDasharray="4 2" label={{ value: 'Monitoring', fill: '#9a5f12', fontSize: 11 }} />
+                          <Line type="monotone" dataKey="score" stroke="#2e6b4e" strokeWidth={2.5}
+                            dot={{ fill: '#2e6b4e', r: 5 }} activeDot={{ r: 7 }} />
                         </LineChart>
                       </ResponsiveContainer>
                     </div>
                     <div className="doc-list">
                       {[...details.mmseScores].reverse().map(s => (
                         <div key={s.id} className="doc-list-item">
-                          <div className="doc-list-icon">🧠</div>
+                          <div className="doc-list-icon"><Activity size={18} /></div>
                           <div className="doc-list-body">
                             <p className="doc-list-title">
                               Score: <strong>{s.score}/30</strong>
@@ -596,11 +599,11 @@ export default function DoctorDashboard() {
                     <div className="doc-chart-wrap">
                       <ResponsiveContainer width="100%" height={220}>
                         <BarChart data={moodChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                          <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#90a4ae' }} />
-                          <YAxis domain={[0, 10]} tick={{ fontSize: 11, fill: '#90a4ae' }} />
+                          <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#9aa19b' }} />
+                          <YAxis domain={[0, 10]} tick={{ fontSize: 11, fill: '#9aa19b' }} />
                           <Tooltip
                             formatter={(v, n, props) => [props.payload.mood, 'Mood']}
-                            contentStyle={{ borderRadius: '10px', border: '1px solid #c8e6c9', fontSize: 13 }}
+                            contentStyle={{ borderRadius: '10px', border: '1px solid #cfe0d9', fontSize: 13 }}
                           />
                           <Bar dataKey="score" radius={[6, 6, 0, 0]}>
                             {moodChartData.map((entry, i) => (
@@ -613,7 +616,7 @@ export default function DoctorDashboard() {
                     <div className="doc-list">
                       {details.moods.map((m, i) => (
                         <div key={i} className="doc-list-item">
-                          <div className="doc-list-icon">{MOOD_EMOJI[m.mood] || '😐'}</div>
+                          <div className="doc-list-icon"><MoodGlyph mood={m.mood} size={16} /></div>
                           <div className="doc-list-body">
                             <p className="doc-list-title">{m.mood}</p>
                             <p className="doc-list-date">{formatDate(m.recordedAt)}</p>
@@ -640,7 +643,7 @@ export default function DoctorDashboard() {
                   <div className="doc-list">
                     {details.careNotes.map(n => (
                       <div key={n.id} className="doc-list-item doc-note-item">
-                        <div className="doc-list-icon">📝</div>
+                        <div className="doc-list-icon"><NotebookPen size={18} /></div>
                         <div className="doc-list-body">
                           <p className="doc-list-title">{n.note}</p>
                           <p className="doc-list-date">{formatDate(n.createdAt)}</p>
@@ -736,7 +739,7 @@ export default function DoctorDashboard() {
     <div className="doc-container">
       <div className="doc-header">
         <div>
-          <div className="doc-role-badge">🩺 Doctor</div>
+          <div className="doc-role-badge"><Stethoscope size={15} /> Doctor</div>
           <h1 className="doc-title">Dr. {displayName}'s Dashboard</h1>
           <p className="doc-subtitle">{user?.profile?.specialization || 'Virtual Memory Companion'}</p>
         </div>
@@ -764,11 +767,11 @@ export default function DoctorDashboard() {
           <p className="doc-stat-lbl">Total Caregivers</p>
         </div>
         <div className="doc-stat-card">
-          <p className="doc-stat-val" style={{ color: stableCount > 0 ? '#43a047' : '#757575' }}>{stableCount}</p>
+          <p className="doc-stat-val" style={{ color: stableCount > 0 ? '#2e6b4e' : '#6b736d' }}>{stableCount}</p>
           <p className="doc-stat-lbl">Latest MMSE 24–30</p>
         </div>
         <div className="doc-stat-card">
-          <p className="doc-stat-val" style={{ color: decliningCount > 0 ? '#e53935' : '#757575' }}>{decliningCount}</p>
+          <p className="doc-stat-val" style={{ color: decliningCount > 0 ? '#a33a2c' : '#6b736d' }}>{decliningCount}</p>
           <p className="doc-stat-lbl">Lower than previous MMSE (≥3 pts)</p>
         </div>
       </div>
@@ -776,13 +779,13 @@ export default function DoctorDashboard() {
       {/* Alerts */}
       {alertPatients.length > 0 && (
         <div className="doc-alerts-section">
-          <h2 className="doc-alerts-title">⚠ Patients Needing Attention Today</h2>
+          <h2 className="doc-alerts-title">Patients needing attention today</h2>
           <div className="doc-alerts-list">
             {alertPatients.map(p => (
               <div key={p.id} className="doc-alert-item">
                 <span className="doc-alert-name">{p.name}</span>
                 <span className="doc-alert-mood">
-                  {p.latestMoodEmoji} Feeling {p.latestMood} — self-reported mood {p.wellnessScore}/10
+                  Feeling {p.latestMood} — self-reported mood {p.wellnessScore}/10
                 </span>
                 <button className="doc-view-btn-sm" onClick={() => openPatient(p)}>View</button>
               </div>
@@ -795,7 +798,7 @@ export default function DoctorDashboard() {
       <h2 className="doc-patients-heading">All Patients</h2>
       {patients.length === 0 ? (
         <div className="doc-empty-state">
-          <p className="doc-empty-icon">👥</p>
+          <p className="doc-empty-icon"><Users size={30} strokeWidth={1.5} /></p>
           <p className="doc-empty-title">No patients in the system yet</p>
           <p className="doc-empty-sub">Use Manage Team to create patient accounts.</p>
           <button className="doc-team-btn" onClick={() => setView('team')}>Manage Team</button>
@@ -807,13 +810,13 @@ export default function DoctorDashboard() {
               key={p.id}
               className={`doc-patient-card ${p.hasAlert ? 'doc-patient-card--alert' : ''}`}
             >
-              {p.hasAlert && <div className="doc-alert-chip">⚠ Needs Attention</div>}
-              <div className="doc-patient-avatar">👤</div>
+              {p.hasAlert && <div className="doc-alert-chip">Needs attention</div>}
+              <div className="doc-patient-avatar"><Initials name={p.name} size={52} /></div>
               <h3 className="doc-patient-name">{p.name}</h3>
 
               <div className="doc-patient-mood">
                 {p.latestMood
-                  ? <>{p.latestMoodEmoji} <span>{p.latestMood}</span></>
+                  ? <><MoodGlyph mood={p.latestMood} size={14} /> <span>{p.latestMood}</span></>
                   : <span className="doc-no-data">No mood check-in</span>}
               </div>
 
@@ -839,7 +842,7 @@ export default function DoctorDashboard() {
               )}
 
               <p className="doc-patient-caregiver">
-                👩‍⚕️ {p.assignedCaregiver ? p.assignedCaregiver.name : 'No caregiver assigned'}
+                {p.assignedCaregiver ? p.assignedCaregiver.name : 'No caregiver assigned'}
               </p>
 
               <div className="doc-card-actions">
@@ -873,7 +876,7 @@ export default function DoctorDashboard() {
                 onChange={e => { setAddPatientForm(p => ({ ...p, password: e.target.value })); setAddPatientError(''); }} />
             </div>
             {addPatientError && <p className="doc-error">{addPatientError}</p>}
-            {addPatientSuccess && <p style={{ color: '#43a047', fontWeight: 600, marginTop: '0.5rem' }}>{addPatientSuccess}</p>}
+            {addPatientSuccess && <p style={{ color: '#2e6b4e', fontWeight: 600, marginTop: '0.5rem' }}>{addPatientSuccess}</p>}
             <button className="doc-save-btn" onClick={handleAddPatient} disabled={addingPatient}>
               {addingPatient ? 'Adding…' : 'Add Patient'}
             </button>
@@ -885,7 +888,7 @@ export default function DoctorDashboard() {
       <h2 className="doc-patients-heading" style={{ marginTop: '2rem' }}>All Caregivers</h2>
       {caregivers.length === 0 ? (
         <div className="doc-empty-state">
-          <p className="doc-empty-icon">👩‍⚕️</p>
+          <p className="doc-empty-icon"><HeartHandshake size={30} strokeWidth={1.5} /></p>
           <p className="doc-empty-title">No caregivers registered yet</p>
           <p className="doc-empty-sub">Use Manage Team to link caregivers to your team.</p>
         </div>
@@ -893,10 +896,10 @@ export default function DoctorDashboard() {
         <div className="doc-caregivers-grid">
           {caregivers.map(cg => (
             <div key={cg.id} className="doc-caregiver-card">
-              <div className="doc-cg-avatar">👩‍⚕️</div>
+              <div className="doc-cg-avatar"><Initials name={cg.name} size={48} /></div>
               <h3 className="doc-cg-name">{cg.name}</h3>
               <p className="doc-cg-email">{cg.email}</p>
-              {cg.phone && <p className="doc-cg-phone">📞 {cg.phone}</p>}
+              {cg.phone && <p className="doc-cg-phone"><Phone size={14} /> {cg.phone}</p>}
               <div className="doc-cg-patient-badge">
                 {cg.patientCount} patient{cg.patientCount !== 1 ? 's' : ''}
               </div>

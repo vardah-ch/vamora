@@ -1,38 +1,33 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Lock, Mail, Heart, Brain, AlertCircle } from 'lucide-react';
+import { AlertCircle, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { Logo } from '../components/Glyphs';
 import './Login.css';
+
+const ROLE_HOME = { patient: '/patient-dashboard', caregiver: '/caregiver-dashboard', doctor: '/doctor-dashboard', super_admin: '/super-admin' };
+
+// Demo accounts are shown only in development builds.
+const DEMO = [
+  { role: 'Patient', email: 'sarah.patient@vamora.com', password: 'password123' },
+  { role: 'Caregiver', email: 'amna.caregiver@vamora.com', password: 'password123' },
+  { role: 'Doctor', email: 'sarah.md@vamora.com', password: 'password123' }
+];
 
 const Login = () => {
   const navigate = useNavigate();
   const { login, isAuthenticated, user } = useAuth();
-
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
-
+  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Redirect if already authenticated
   useEffect(() => {
-    if (isAuthenticated && user) {
-      if (user.role === 'patient') navigate('/patient-dashboard');
-      else if (user.role === 'caregiver') navigate('/caregiver-dashboard');
-      else if (user.role === 'doctor') navigate('/doctor-dashboard');
-      else if (user.role === 'super_admin') navigate('/super-admin');
-      else navigate('/role-selection');
-    }
+    if (isAuthenticated && user) navigate(ROLE_HOME[user.role] || '/role-selection');
   }, [isAuthenticated, user, navigate]);
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-    // Clear error when user types
+    setFormData({ ...formData, [e.target.name]: e.target.value });
     if (error) setError('');
   };
 
@@ -40,129 +35,87 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
-
     try {
       const response = await login(formData.email, formData.password);
-      const userRole = response.data.user.role;
-
-      // Navigate based on user role
-      if (userRole === 'patient') navigate('/patient-dashboard');
-      else if (userRole === 'caregiver') navigate('/caregiver-dashboard');
-      else if (userRole === 'doctor') navigate('/doctor-dashboard');
-      else if (userRole === 'super_admin') navigate('/super-admin');
-      else navigate('/role-selection');
+      navigate(ROLE_HOME[response.data.user.role] || '/role-selection');
     } catch (err) {
-      console.error('Login error:', err);
-      setError(
-        err.response?.data?.message ||
-        'Login failed. Please check your credentials and try again.'
-      );
+      setError(err.response?.data?.message || 'We could not sign you in. Please check your email and password.');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="login-container">
-      <div className="login-card">
-        {/* Logo Section */}
-        <div className="login-header">
-          <div className="logo-wrapper">
-            <Brain size={48} className="logo-icon" />
-            <Heart size={32} className="heart-icon" fill="currentColor" />
-          </div>
-          <h1 className="login-title">Virtual Memory Companion</h1>
-          <p className="login-subtitle">Supporting Memory, Strengthening Connection</p>
-        </div>
-
-        {/* Error Message */}
-        {error && (
-          <div className="error-message">
-            <AlertCircle size={20} />
-            <span>{error}</span>
-          </div>
-        )}
-
-        {/* Login Form */}
-        <form onSubmit={handleSubmit} className="login-form">
-          <div className="form-group">
-            <label htmlFor="email" className="form-label">
-              <Mail size={20} />
-              Email Address
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="form-input"
-              placeholder="Enter your email"
-              required
-              autoComplete="email"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="password" className="form-label">
-              <Lock size={20} />
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              className="form-input"
-              placeholder="Enter your password"
-              required
-              autoComplete="current-password"
-            />
-          </div>
-
-          <div className="form-options">
-            <label className="checkbox-label">
-              <input type="checkbox" defaultChecked />
-              <span>Remember me</span>
-            </label>
-            <Link to="/forgot-password" className="forgot-link">Forgot password?</Link>
-          </div>
-
-          <button
-            type="submit"
-            className="login-button"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Signing in...' : 'Sign In'}
-          </button>
-        </form>
-
-        {/* Demo Credentials Info */}
-        <div className="demo-info">
-          <p className="demo-title">🔑 Demo Credentials</p>
-          <div className="demo-credentials">
-            <p><strong>Patient:</strong> sarah.patient@vamora.com / password123</p>
-            <p><strong>Caregiver:</strong> amna.caregiver@vamora.com / password123</p>
-            <p><strong>Doctor:</strong> sarah.md@vamora.com / password123</p>
+    <div className="auth-shell">
+      {/* ── Editorial side ── */}
+      <aside className="auth-story" aria-hidden="true">
+        <Logo size={30} light />
+        <div className="auth-story-body">
+          <p className="auth-kicker">Memory companion</p>
+          <h2 className="auth-statement">The people, places and small routines that make a day feel like <em>yours</em>.</h2>
+          <div className="polaroids tilt">
+            <figure className="polaroid p1"><div className="ph ph-a" /><figcaption>Eid at home, 2023</figcaption></figure>
+            <figure className="polaroid p2"><div className="ph ph-b" /><figcaption>Morning tea, 8:00</figcaption></figure>
+            <figure className="polaroid p3"><div className="ph ph-c" /><figcaption>Amna — my daughter</figcaption></figure>
           </div>
         </div>
+        <p className="auth-foot">Built for people living with dementia, their families and care teams.</p>
+      </aside>
 
-        {/* Footer */}
-        <div className="login-footer">
-          <p className="privacy-text">Protected by industry-standard encryption</p>
+      {/* ── Form side ── */}
+      <main className="auth-panel">
+        <div className="auth-card">
+          <div className="auth-mobile-logo"><Logo size={28} /></div>
+          <h1 className="auth-title">Welcome back</h1>
+          <p className="auth-sub">Sign in to continue to your memories and care team.</p>
+
+          {error && (
+            <div className="auth-alert" role="alert"><AlertCircle size={18} /><span>{error}</span></div>
+          )}
+
+          <form onSubmit={handleSubmit} className="auth-form" noValidate>
+            <div className="field">
+              <label htmlFor="email">Email address</label>
+              <input type="email" id="email" name="email" value={formData.email} onChange={handleChange}
+                placeholder="name@example.com" required autoComplete="email" />
+            </div>
+            <div className="field">
+              <div className="field-row">
+                <label htmlFor="password">Password</label>
+                <Link to="/forgot-password" className="auth-link">Forgot password?</Link>
+              </div>
+              <div className="pw-wrap">
+                <input type={showPassword ? 'text' : 'password'} id="password" name="password" value={formData.password}
+                  onChange={handleChange} required autoComplete="current-password" />
+                <button type="button" className="pw-toggle" onClick={() => setShowPassword(s => !s)}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}>
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </div>
+            <button type="submit" className="auth-submit fill-btn" disabled={isLoading}>
+              <span>{isLoading ? 'Signing in…' : 'Sign in'}</span>
+              {!isLoading && <ArrowRight size={18} />}
+            </button>
+          </form>
+
+          {import.meta.env.DEV && (
+            <div className="demo">
+              <p className="demo-head">Demo accounts <span>development only</span></p>
+              <div className="demo-list">
+                {DEMO.map(d => (
+                  <button key={d.email} type="button" className="demo-chip"
+                    onClick={() => setFormData({ email: d.email, password: d.password })}>
+                    <strong>{d.role}</strong><span>{d.email}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
-      </div>
-
-      {/* Background Decoration */}
-      <div className="background-decoration">
-        <div className="circle circle-1"></div>
-        <div className="circle circle-2"></div>
-        <div className="circle circle-3"></div>
-      </div>
+      </main>
     </div>
   );
 };
 
 export default Login;
-

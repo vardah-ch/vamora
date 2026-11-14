@@ -1,33 +1,54 @@
-.mp-container { max-width: 860px; margin: 0 auto; padding: 1.5rem 1rem 4rem; color: #2d1f3d; font-size: 1.1rem; line-height: 1.5; }
-.mp-back { display: inline-flex; align-items: center; gap: 0.4rem; min-height: 48px; padding: 0.5rem 1rem; border-radius: 12px; border: 2px solid #c9bfdc; background: #fff; font-size: 1.05rem; font-weight: 600; cursor: pointer; color: #2d1f3d; }
-.mp-header { display: flex; gap: 1rem; align-items: flex-start; margin: 1.25rem 0; color: #4a2f75; }
-.mp-header h1 { margin: 0; font-size: 2rem; }
-.mp-header p { margin: 0.25rem 0 0; color: #2d1f3d; }
-.mp-container h2 { display: flex; align-items: center; gap: 0.5rem; font-size: 1.4rem; margin: 2rem 0 0.75rem; }
-.mp-card { background: #fff; border-radius: 16px; padding: 1.1rem 1.25rem; margin-bottom: 1rem; box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08); border: 1px solid #e6def2; }
-.mp-card h3 { margin: 0 0 0.4rem; font-size: 1.2rem; }
-.mp-card-pending { border: 2px solid #7b5ea7; }
-.mp-role { font-size: 0.85rem; font-weight: 600; background: #efe8fa; color: #4a2f75; border-radius: 999px; padding: 0.1rem 0.6rem; margin-left: 0.4rem; text-transform: capitalize; }
-.mp-basis { color: #5b4a70; margin: 0 0 0.5rem; }
-.mp-review { background: #fff8e1; border: 1px solid #f0c36d; border-radius: 12px; padding: 0.6rem 0.9rem; margin: 0.5rem 0; }
-.mp-review p { margin: 0 0 0.5rem; }
-.mp-checklist { border: none; padding: 0; margin: 0.5rem 0; display: grid; gap: 0.35rem; }
-.mp-check { display: flex; align-items: center; gap: 0.6rem; min-height: 44px; cursor: pointer; }
-.mp-check input { width: 26px; height: 26px; accent-color: #5b3f8c; flex-shrink: 0; }
-.mp-check-disabled { color: #8a8094; cursor: not-allowed; }
-.mp-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.75rem; }
-.mp-btn { display: inline-flex; align-items: center; gap: 0.4rem; min-height: 52px; padding: 0.6rem 1.2rem; border-radius: 12px; border: 2px solid #5b3f8c; background: #fff; color: #3b2560; font-size: 1.05rem; font-weight: 700; cursor: pointer; }
-.mp-btn:disabled { opacity: 0.45; cursor: not-allowed; }
-.mp-btn-yes { background: #2e7d32; border-color: #2e7d32; color: #fff; }
-.mp-btn-no { border-color: #b71c1c; color: #b71c1c; }
-.mp-callout { background: #efe8fa; border-radius: 12px; padding: 0.8rem 1rem; }
-.mp-ok { background: #e8f5e9; border-radius: 12px; padding: 0.7rem 1rem; color: #1b5e20; font-weight: 600; }
-.mp-error { background: #ffebee; border-radius: 12px; padding: 0.7rem 1rem; color: #b71c1c; font-weight: 600; }
-.mp-activity { list-style: none; padding: 0; margin: 0; background: #fff; border-radius: 16px; border: 1px solid #e6def2; }
-.mp-activity li { display: grid; grid-template-columns: minmax(9rem, 12rem) 1fr; gap: 0.75rem; padding: 0.6rem 1rem; border-bottom: 1px solid #f0eaf8; }
-.mp-activity li:last-child { border-bottom: none; }
-.mp-activity time { color: #5b4a70; }
-.mp-denied { background: #fff5f5; }
-.mp-settings { display: grid; gap: 0.75rem; }
-.mp-settings select { margin-left: 0.6rem; min-height: 44px; font-size: 1.05rem; border-radius: 10px; border: 2px solid #c9bfdc; padding: 0 0.5rem; }
-@media (max-width: 560px) { .mp-activity li { grid-template-columns: 1fr; gap: 0.1rem; } .mp-header h1 { font-size: 1.6rem; } }
+.mp-container { max-width: 900px; margin: 0 auto; padding: 28px clamp(16px, 4vw, 40px) 72px; font-size: 1.08rem; }
+.mp-header { display: flex; gap: 18px; align-items: flex-start; margin: 26px 0 8px; }
+.mp-header > svg { width: 52px; height: 52px; padding: 12px; border-radius: 16px; background: var(--primary); color: #fff; flex-shrink: 0; }
+.mp-header h1 { font-size: clamp(2rem, 4vw, 2.8rem); }
+.mp-header p { color: var(--ink-3); font-size: 1.1rem; margin-top: 4px; max-width: 620px; }
+.mp-container h2 { display: flex; align-items: center; gap: 10px; font-size: 1.4rem; margin: 44px 0 14px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.mp-container h2 svg { color: var(--accent); }
+
+.mp-card { background: var(--surface); border: 1px solid var(--line-2); border-radius: var(--r-l); padding: 22px 24px; margin-bottom: 14px; box-shadow: var(--shadow-1); }
+.mp-card h3 { font-size: 1.3rem; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.mp-card-pending { border: 1.5px solid var(--accent); box-shadow: 0 0 0 4px var(--accent-50), var(--shadow-1); }
+.mp-role { font-family: var(--font-body); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--primary); background: var(--primary-50); border-radius: 999px; padding: 3px 10px; }
+.mp-basis { color: var(--ink-3); margin: 4px 0 8px; }
+.mp-review { background: var(--warn-50); border: 1px solid #e6cfa6; border-radius: var(--r-m); padding: 14px 16px; margin: 12px 0; color: #5a3a08; }
+.mp-review p { margin-bottom: 10px; }
+
+/* Checklist as toggle rows */
+.mp-checklist { border: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 6px 18px; margin: 14px 0 4px; }
+.mp-check { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 6px 10px; border-radius: 10px; cursor: pointer; transition: background 0.2s; }
+.mp-check:hover { background: var(--surface-2); }
+.mp-check input { appearance: none; -webkit-appearance: none; width: 46px; height: 26px; border-radius: 999px; background: #d3cbbd; position: relative; flex-shrink: 0; cursor: pointer; transition: background 0.25s var(--ease); }
+.mp-check input::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25); transition: transform 0.3s var(--ease); }
+.mp-check input:checked { background: var(--primary); }
+.mp-check input:checked::after { transform: translateX(20px); }
+.mp-check input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.mp-check-disabled { color: var(--ink-3); cursor: not-allowed; }
+.mp-check-disabled input { opacity: 0.45; cursor: not-allowed; }
+
+.mp-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+.mp-btn { display: inline-flex; align-items: center; gap: 8px; height: 50px; padding: 0 20px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); font-weight: 700; transition: border-color 0.2s, background 0.2s, color 0.2s, opacity 0.2s; }
+.mp-btn:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+.mp-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.mp-btn-yes { background: var(--primary); border-color: var(--primary); color: #fff; }
+.mp-btn-yes:hover:not(:disabled) { background: var(--primary-700); color: #fff; }
+.mp-btn-no { color: var(--danger); border-color: #ecd0ca; }
+.mp-btn-no:hover:not(:disabled) { background: var(--danger-50); border-color: var(--danger); color: var(--danger); }
+
+.mp-callout { background: var(--info-50); border-left: 4px solid var(--info); border-radius: var(--r-s); padding: 14px 18px; color: #1d3e56; margin: 18px 0; }
+.mp-ok, .mp-error { border-radius: var(--r-s); padding: 12px 16px; font-weight: 700; margin: 16px 0; }
+.mp-ok { background: var(--ok-50); color: var(--ok); border: 1px solid #c3dccd; }
+.mp-error { background: var(--danger-50); color: var(--danger); border: 1px solid #e9c2bb; }
+
+/* Activity log as a timeline */
+.mp-activity { list-style: none; position: relative; padding-left: 26px; }
+.mp-activity::before { content: ''; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 2px; background: var(--line); }
+.mp-activity li { position: relative; display: grid; grid-template-columns: 11rem 1fr; gap: 14px; padding: 10px 0; color: var(--ink-2); }
+.mp-activity li::before { content: ''; position: absolute; left: -24px; top: 17px; width: 12px; height: 12px; border-radius: 50%; background: var(--surface); border: 2px solid var(--primary); }
+.mp-activity time { color: var(--ink-3); font-size: 0.95rem; font-variant-numeric: tabular-nums; }
+.mp-activity strong { color: var(--ink); }
+.mp-denied::before { border-color: var(--danger) !important; background: var(--danger-50) !important; }
+.mp-denied-label { color: var(--danger); font-style: normal; font-weight: 700; }
+.mp-settings { display: grid; gap: 10px; }
+.mp-settings select { margin-left: 12px; height: 46px; padding: 0 12px; font-weight: 700; }
+@media (max-width: 560px) { .mp-activity li { grid-template-columns: 1fr; gap: 0; } .mp-checklist { grid-template-columns: 1fr; } }

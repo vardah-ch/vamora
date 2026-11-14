@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Camera, MessageCircle, Smile, Scan, Calendar, Clock, BookHeart, ShieldCheck } from 'lucide-react';
+import { Camera, MessageCircle, Smile, Scan, Calendar, Clock, BookHeart, ShieldCheck, CalendarDays, Pill } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
@@ -87,9 +87,9 @@ const PatientDashboard = () => {
   };
 
   const getAppointmentLabel = (date) => {
-    if (isToday(date)) return { label: 'Today', color: '#e53935' };
-    if (isTomorrow(date)) return { label: 'Tomorrow', color: '#fb8c00' };
-    return { label: null, color: '#1976d2' };
+    if (isToday(date)) return { label: 'Today', color: '#a33a2c' };
+    if (isTomorrow(date)) return { label: 'Tomorrow', color: '#9a5f12' };
+    return { label: null, color: '#2c5a7a' };
   };
 
   return (
@@ -131,7 +131,7 @@ const PatientDashboard = () => {
               const { label, color } = getAppointmentLabel(a.appointmentDate);
               return (
                 <div key={a.id} className="appointment-card" style={{ borderLeft: `4px solid ${color}` }}>
-                  <div className="appointment-icon">📋</div>
+                  <div className="appointment-icon"><CalendarDays size={22} /></div>
                   <div className="appointment-info">
                     <p className="appointment-title">{a.title}</p>
                     {a.doctorName && <p className="appointment-sub">{a.doctorName}</p>}
@@ -155,17 +155,17 @@ const PatientDashboard = () => {
       {/* Medication Reminders */}
       {medications.length > 0 && (
         <div className="appointments-section">
-          <h2 className="appointments-title">💊 My Medications</h2>
+          <h2 className="appointments-title">My medicines</h2>
           <div className="appointments-list">
             {medications.map(m => (
-              <div key={m.id} className="appointment-card" style={{ borderLeft: '4px solid #2e7d32' }}>
-                <div className="appointment-icon">💊</div>
+              <div key={m.id} className="appointment-card" style={{ borderLeft: '4px solid #2e6b4e' }}>
+                <div className="appointment-icon"><Pill size={22} /></div>
                 <div className="appointment-info">
                   <p className="appointment-title">{m.medicationName}</p>
                   {m.dosage && <p className="appointment-sub">Dose: {m.dosage}</p>}
                   {m.frequency && <p className="appointment-sub">{m.frequency}</p>}
                   {m.timing && (
-                    <p className="appointment-date" style={{ color: '#2e7d32' }}>
+                    <p className="appointment-date" style={{ color: '#2e6b4e' }}>
                       {m.timing}
                     </p>
                   )}
@@ -181,7 +181,7 @@ const PatientDashboard = () => {
 
         <div className="action-buttons-grid">
           <button
-            className="action-button photos-button"
+            className="action-button spot tilt photos-button"
             onClick={() => navigate('/photo-gallery')}
             aria-label="View your photos and memories"
           >
@@ -193,7 +193,7 @@ const PatientDashboard = () => {
           </button>
 
           <button
-            className="action-button companion-button"
+            className="action-button spot tilt companion-button"
             onClick={() => navigate('/talk-to-companion')}
             aria-label="Talk to your memory companion"
           >
@@ -205,7 +205,7 @@ const PatientDashboard = () => {
           </button>
 
           <button
-            className="action-button memory-button"
+            className="action-button spot tilt memory-button"
             onClick={() => navigate('/mood-checkin')}
             aria-label="Check in your mood"
           >
@@ -217,7 +217,7 @@ const PatientDashboard = () => {
           </button>
 
           <button
-            className="action-button assess-button"
+            className="action-button spot tilt assess-button"
             onClick={() => navigate('/mood-assessment')}
             aria-label="Optional mood camera"
           >
@@ -229,7 +229,7 @@ const PatientDashboard = () => {
           </button>
 
           <button
-            className="action-button photos-button"
+            className="action-button spot tilt photos-button"
             onClick={() => navigate('/memory-book')}
             aria-label="Open your Memory Book"
           >
@@ -241,7 +241,7 @@ const PatientDashboard = () => {
           </button>
 
           <button
-            className="action-button memory-button"
+            className="action-button spot tilt memory-button"
             onClick={() => navigate('/my-privacy')}
             aria-label="Choose who can see your information"
           >
@@ -255,7 +255,7 @@ const PatientDashboard = () => {
 
         <div className="tips-section">
           <div className="tip-card">
-            <p className="tip-text">💡 Tap any card to explore your memories</p>
+            <p className="tip-text">Choose a card to begin. You can come back here any time with the Home button.</p>
           </div>
         </div>
       </main>

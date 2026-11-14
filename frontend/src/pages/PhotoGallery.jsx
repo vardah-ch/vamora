@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Mic, Square, Play, Trash2, RotateCcw, CheckCircle, Upload } from 'lucide-react';
+import { ArrowLeft, Mic, Square, Play, Trash2, RotateCcw, CheckCircle, Upload, Images } from 'lucide-react';
 import api from '../services/api';
 import { mediaUrl } from '../services/media';
 import './PhotoGallery.css';
@@ -13,7 +13,7 @@ import './PhotoGallery.css';
  *  - Removing is undoable for 30 days ("Recently removed").
  */
 const CATEGORIES = ['All', 'Family', 'Pet', 'Home', 'Memory'];
-const CATEGORY_COLORS = { family: '#6a4c93', pet: '#a35200', home: '#2e7d32', memory: '#1565c0' };
+const CATEGORY_COLORS = { family: '#1f4d45', pet: '#8f5b0f', home: '#2e6b4e', memory: '#b9572f' };
 
 function VoiceRecorder({ photoId, onSaved }) {
   const [state, setState] = useState('idle'); // idle | recording | saving | error
@@ -126,18 +126,18 @@ export default function PhotoGallery() {
 
       {filtered.length === 0 ? (
         <div className="empty-state">
-          <div className="empty-icon" aria-hidden="true">💙</div>
+          <div className="empty-icon" aria-hidden="true"><Images size={34} strokeWidth={1.5} /></div>
           <p className="empty-text">No photos here yet. You or your helpers can add some below.</p>
         </div>
       ) : (
         <div className="photo-grid">
           {filtered.map(photo => (
-            <button key={photo.id} className="photo-card" onClick={() => setPreviewPhoto(photo)} aria-label={`Open photo: ${photo.caption}`}>
+            <button key={photo.id} className="photo-card spot" onClick={() => setPreviewPhoto(photo)} aria-label={`Open photo: ${photo.caption}`}>
               <img src={mediaUrl(photo.url)} alt="" className="photo-image" onError={e => { e.currentTarget.style.visibility = 'hidden'; }} />
               <div className="photo-details">
                 <p className="photo-caption">{photo.caption}</p>
                 <div className="photo-badges">
-                  {photo.category && <span className="photo-badge" style={{ background: CATEGORY_COLORS[photo.category] || '#6a4c93' }}>{photo.category}</span>}
+                  {photo.category && <span className="photo-badge" style={{ background: CATEGORY_COLORS[photo.category] || '#1f4d45' }}>{photo.category}</span>}
                   {photo.hasVoiceNote && <span className="photo-badge photo-badge-voice">Voice note</span>}
                   {photo.patientConfirmed === false && <span className="photo-badge photo-badge-helper">Added by a helper</span>}
                 </div>

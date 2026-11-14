@@ -2,16 +2,18 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import './MoodCheckin.css';
+import { CheckCircle2 } from 'lucide-react';
+import { MoodGlyph } from '../components/Glyphs';
 
 const moods = [
-  { emoji: '😊', label: 'Happy',     value: 'happy' },
-  { emoji: '😌', label: 'Calm',      value: 'calm' },
-  { emoji: '😔', label: 'Sad',       value: 'sad' },
-  { emoji: '😰', label: 'Anxious',   value: 'anxious' },
-  { emoji: '😡', label: 'Frustrated',value: 'frustrated' },
-  { emoji: '😴', label: 'Tired',     value: 'tired' },
-  { emoji: '🤩', label: 'Excited',   value: 'excited' },
-  { emoji: '😕', label: 'Confused',  value: 'confused' },
+  { emoji: <MoodGlyph mood="happy" size={26} />, label: 'Happy',     value: 'happy' },
+  { emoji: <MoodGlyph mood="calm" size={26} />, label: 'Calm',      value: 'calm' },
+  { emoji: <MoodGlyph mood="sad" size={26} />, label: 'Sad',       value: 'sad' },
+  { emoji: <MoodGlyph mood="anxious" size={26} />, label: 'Anxious',   value: 'anxious' },
+  { emoji: <MoodGlyph mood="frustrated" size={26} />, label: 'Frustrated',value: 'frustrated' },
+  { emoji: <MoodGlyph mood="tired" size={26} />, label: 'Tired',     value: 'tired' },
+  { emoji: <MoodGlyph mood="excited" size={26} />, label: 'Excited',   value: 'excited' },
+  { emoji: <MoodGlyph mood="confused" size={26} />, label: 'Confused',  value: 'confused' },
 ];
 
 export default function MoodCheckin() {
@@ -60,7 +62,7 @@ export default function MoodCheckin() {
     <div className="mood-container">
 
       <div className="mood-header">
-        <h1 className="mood-title">💭 How Are You Feeling?</h1>
+        <h1 className="mood-title">How are you feeling?</h1>
         <p className="mood-subtitle">It's okay to feel any way you do</p>
       </div>
 
@@ -103,7 +105,7 @@ export default function MoodCheckin() {
         </div>
       ) : (
         <div className="mood-card success-card">
-          <div className="success-icon">🌟</div>
+          <div className="success-icon"><CheckCircle2 size={44} strokeWidth={1.6} /></div>
           <h2 className="success-title">Thank you for sharing!</h2>
           <p className="success-subtitle">
             You're feeling <strong>{selectedMood.emoji} {selectedMood.label}</strong> today
@@ -125,7 +127,7 @@ export default function MoodCheckin() {
               const moodData = moods.find(m => m.value === entry.mood);
               return (
                 <div key={entry.id} className="history-item">
-                  <span className="history-emoji">{moodData?.emoji || '😐'}</span>
+                  <span className="history-emoji">{moodData?.emoji || <MoodGlyph mood={entry.mood} size={18} />}</span>
                   <div className="history-details">
                     <p className="history-mood">{moodData?.label || entry.mood}</p>
                     {entry.note && <p className="history-note">{entry.note}</p>}

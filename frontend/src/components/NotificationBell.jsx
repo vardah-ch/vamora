@@ -1,12 +1,18 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNotifications } from '../hooks/useNotifications';
 import './NotificationBell.css';
+import { Bell, Pill, CalendarPlus, AlarmClock, HeartHandshake, LifeBuoy, UserPlus, ShieldCheck, Trash2, Users } from 'lucide-react';
 
 const TYPE_ICON = {
-  medication_assigned: '💊',
-  checkup_added:       '📋',
-  checkup_reminder:    '⏰',
-  mood_alert:          '💛',
+  medication_assigned: <Pill size={16} />,
+  checkup_added:       <CalendarPlus size={16} />,
+  checkup_reminder:    <AlarmClock size={16} />,
+  mood_alert:          <HeartHandshake size={16} />,
+  help_request:        <LifeBuoy size={16} />,
+  access_request:      <UserPlus size={16} />,
+  access_changed:      <ShieldCheck size={16} />,
+  memory_deleted:      <Trash2 size={16} />,
+  care_team_changed:   <Users size={16} />,
 };
 
 function formatTime(iso) {
@@ -40,7 +46,7 @@ export default function NotificationBell() {
         aria-label="Notifications"
         aria-expanded={open}
       >
-        🔔
+        <Bell size={20} />
         {unreadCount > 0 && (
           <span className="nb-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>
         )}
@@ -67,7 +73,7 @@ export default function NotificationBell() {
                   className={`nb-item ${n.isRead ? 'nb-item--read' : 'nb-item--unread'}`}
                   onClick={() => !n.isRead && markRead(n.id)}
                 >
-                  <span className="nb-icon">{TYPE_ICON[n.type] || '🔔'}</span>
+                  <span className="nb-icon">{TYPE_ICON[n.type] || <Bell size={16} />}</span>
                   <div className="nb-body">
                     <p className="nb-msg">{n.message}</p>
                     <p className="nb-time">{formatTime(n.createdAt)}</p>

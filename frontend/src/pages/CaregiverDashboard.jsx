@@ -4,6 +4,8 @@ import api from '../services/api';
 import { mediaUrl } from '../services/media';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import './CaregiverDashboard.css';
+import { Users } from 'lucide-react';
+import { MoodGlyph, Initials, moodLabel } from '../components/Glyphs';
 
 export default function CaregiverDashboard() {
   const { user } = useAuth();
@@ -168,15 +170,14 @@ export default function CaregiverDashboard() {
 
 
   const getMoodEmoji = (mood) => {
-    const emojis = { happy: '😊', calm: '😌', sad: '😔', anxious: '😰', frustrated: '😡', tired: '😴', excited: '🤩', confused: '😕' };
-    return emojis[mood] || '😐';
+    return <MoodGlyph mood={mood} size={16} />;
   };
 
   const getWellnessColor = (score) => {
-    if (!score) return '#94a3b8';
-    if (score >= 7) return '#43a047';
-    if (score >= 4) return '#fb8c00';
-    return '#e53935';
+    if (!score) return '#9aa19b';
+    if (score >= 7) return '#2e6b4e';
+    if (score >= 4) return '#9a5f12';
+    return '#a33a2c';
   };
 
   const getMoodScore = (mood) => {
@@ -185,9 +186,9 @@ export default function CaregiverDashboard() {
   };
 
   const getMoodBarColor = (mood) => {
-    if (['happy', 'excited', 'calm'].includes(mood)) return '#43a047';
-    if (['tired', 'confused'].includes(mood)) return '#fb8c00';
-    return '#e53935';
+    if (['happy', 'excited', 'calm'].includes(mood)) return '#2e6b4e';
+    if (['tired', 'confused'].includes(mood)) return '#9a5f12';
+    return '#a33a2c';
   };
 
   const formatDate = (date) => new Date(date).toLocaleDateString('en-US', {
@@ -246,7 +247,7 @@ export default function CaregiverDashboard() {
             <span className="cg-summary-label">Latest Mood</span>
             <span className="cg-summary-value">
               {patientDetails.latestMood
-                ? `${getMoodEmoji(patientDetails.latestMood.mood)} ${patientDetails.latestMood.mood}`
+                ? <span className="cg-inline-mood">{getMoodEmoji(patientDetails.latestMood.mood)} {moodLabel(patientDetails.latestMood.mood)}</span>
                 : 'No check-in'}
             </span>
           </div>
@@ -275,11 +276,11 @@ export default function CaregiverDashboard() {
               <div className="cg-graph-container">
                 <ResponsiveContainer width="100%" height={220}>
                   <BarChart data={moodGraphData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                    <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#90a4ae' }} />
-                    <YAxis domain={[0, 10]} tick={{ fontSize: 11, fill: '#90a4ae' }} />
+                    <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#9aa19b' }} />
+                    <YAxis domain={[0, 10]} tick={{ fontSize: 11, fill: '#9aa19b' }} />
                     <Tooltip
                       formatter={(value, name, props) => [props.payload.mood, 'Mood']}
-                      contentStyle={{ borderRadius: '10px', border: '1px solid #e3f2fd' }}
+                      contentStyle={{ borderRadius: '10px', border: '1px solid #e3edf4' }}
                     />
                     <Bar dataKey="score" radius={[6, 6, 0, 0]}>
                       {moodGraphData.map((entry, i) => (
@@ -344,7 +345,7 @@ export default function CaregiverDashboard() {
         {/* Medications — read-only, managed by doctor */}
         <div className="cg-section">
           <div className="cg-section-header">
-            <h2 className="cg-section-title">💊 Medication Schedule</h2>
+            <h2 className="cg-section-title">Medication schedule</h2>
             <span className="cg-readonly-badge">Set by Doctor</span>
           </div>
           {!patientDetails.medications || patientDetails.medications.length === 0 ? (
@@ -354,7 +355,7 @@ export default function CaregiverDashboard() {
               {patientDetails.medications.map(m => (
                 <div key={m.id} className="cg-appointment-item">
                   <div>
-                    <p className="cg-appointment-title">💊 {m.medicationName}</p>
+                    <p className="cg-appointment-title">{m.medicationName}</p>
                     {m.dosage && <p className="cg-appointment-sub">Dose: {m.dosage}</p>}
                     {m.frequency && <p className="cg-appointment-sub">Frequency: {m.frequency}</p>}
                     {m.timing && <p className="cg-appointment-sub">Timing: {m.timing}</p>}
@@ -394,41 +395,28 @@ export default function CaregiverDashboard() {
 
         {/* Memories */}
         <div className="cg-section">
-          <h2 className="cg-section-title">📸 Memories</h2>
+          <h2 className="cg-section-title">Memories</h2>
 
           {/* Existing photos grid */}
           {!patientDetails.photos || patientDetails.photos.length === 0 ? (
-            <p className="cg-empty">No memories added yet. Upload the first one below 💙</p>
+            <p className="cg-empty">No memories added yet. Upload the first one below.</p>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
-              {patientDetails.photos.map(photo => {
-                const src = mediaUrl(photo.url);
-                return (
-                  <div key={photo.id} style={{ borderRadius: '12px', overflow: 'hidden', background: '#f8f5ff', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
-                    <img
-                      src={src}
-                      alt={photo.caption}
-                      style={{ width: '100%', height: '120px', objectFit: 'cover', display: 'block' }}
-                      onError={e => { e.target.style.display = 'none'; }}
-                    />
-                    <div style={{ padding: '0.5rem 0.6rem' }}>
-                      <p style={{ fontSize: '0.82rem', color: '#2d1f3d', fontWeight: 600, margin: '0 0 0.25rem 0', lineHeight: 1.3 }}>{photo.caption}</p>
-                      {photo.category && (
-                        <span style={{
-                          display: 'inline-block', background: '#7b5ea7', color: 'white',
-                          borderRadius: '999px', padding: '0.15rem 0.55rem',
-                          fontSize: '0.7rem', fontWeight: 600, textTransform: 'capitalize',
-                        }}>{photo.category}</span>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
+            <div className="cg-memory-grid">
+              {patientDetails.photos.map(photo => (
+                <figure key={photo.id} className="cg-memory">
+                  <img src={mediaUrl(photo.url)} alt={photo.caption} onError={e => { e.currentTarget.style.visibility = 'hidden'; }} />
+                  <figcaption>
+                    {photo.caption}
+                    {photo.category && <span className="cg-memory-tag">{photo.category}</span>}
+                  </figcaption>
+                </figure>
+              ))}
             </div>
           )}
 
           {/* Upload form */}
-          <div className="cg-note-form" style={{ flexDirection: 'column', gap: '0.6rem' }}>
+          <div className="cg-upload-form">
+            <p className="cg-upload-title">Add a memory for {patientDetails.patient.name}</p>
             <input
               type="file"
               accept="image/*"
@@ -453,10 +441,7 @@ export default function CaregiverDashboard() {
               <option value="memory">Memory</option>
             </select>
             {uploadMsg && (
-              <p style={{
-                color: uploadMsg === 'Memory added!' ? '#43a047' : '#e53935',
-                fontWeight: 600, fontSize: '0.9rem', margin: 0
-              }}>{uploadMsg}</p>
+              <p className={uploadMsg === 'Memory added!' ? 'cg-msg-ok' : 'cg-msg-err'} role="status">{uploadMsg}</p>
             )}
             <button className="cg-submit-btn" onClick={handleUploadPhoto}>
               Add Memory
@@ -486,7 +471,7 @@ export default function CaregiverDashboard() {
           <div className="cg-stat-label">Total Patients</div>
         </div>
         <div className="cg-stat-card">
-          <div className="cg-stat-value" style={{ color: alertPatients.length > 0 ? '#e53935' : '#43a047' }}>
+          <div className="cg-stat-value" style={{ color: alertPatients.length > 0 ? '#a33a2c' : '#2e6b4e' }}>
             {alertPatients.length}
           </div>
           <div className="cg-stat-label">Alerts</div>
@@ -546,16 +531,16 @@ export default function CaregiverDashboard() {
 
       {patients.length === 0 ? (
         <div className="cg-empty-state">
-          <div className="cg-empty-icon">👥</div>
+          <div className="cg-empty-icon"><Users size={30} strokeWidth={1.5} /></div>
           <p className="cg-empty-text">No patients assigned yet</p>
           <p className="cg-empty-sub">A doctor can add you to a care team, or you can send a request above.</p>
         </div>
       ) : (
         <div className="cg-patients-grid">
           {patients.map(patient => (
-            <div key={patient.id} className={`cg-patient-card ${patient.hasAlert ? 'cg-card-alert' : ''}`}>
+            <div key={patient.id} className={`cg-patient-card spot ${patient.hasAlert ? 'cg-card-alert' : ''}`}>
               {patient.hasAlert && <div className="cg-card-alert-badge">Needs Attention</div>}
-              <div className="cg-card-avatar">👤</div>
+              <div className="cg-card-avatar"><Initials name={patient.name} size={56} /></div>
               <h3 className="cg-card-name">{patient.name}</h3>
               <div className="cg-card-mood">
                 {patient.latestMood ? (
