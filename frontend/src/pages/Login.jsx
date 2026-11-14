@@ -40,7 +40,12 @@ const Login = () => {
       const response = await login(formData.email, formData.password);
       navigate(ROLE_HOME[response.data.user.role] || '/role-selection');
     } catch (err) {
-      setError(err.response?.data?.message || 'We could not sign you in. Please check your email and password.');
+      if (!err.response) {
+        // No HTTP response at all: the API server is not reachable (e.g. a static preview without a backend).
+        setError(`The VAMORA server is not reachable right now, so sign-in is unavailable on this preview. To see a live demo, contact ${CREATOR.name} at ${CREATOR.email}.`);
+      } else {
+        setError(err.response.data?.message || 'We could not sign you in. Please check your email and password.');
+      }
     } finally {
       setIsLoading(false);
     }
