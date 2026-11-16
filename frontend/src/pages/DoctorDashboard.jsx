@@ -8,6 +8,7 @@ import {
 import './DoctorDashboard.css';
 import { CalendarDays, Pill, Activity, NotebookPen, Stethoscope, Users, HeartHandshake, Phone } from 'lucide-react';
 import { MoodGlyph, Initials } from '../components/Glyphs';
+import CareTeamConsent from '../components/doctor/CareTeamConsent';
 
 
 const MOOD_SCORES = { happy: 10, excited: 10, calm: 8, tired: 5, confused: 4, anxious: 3, frustrated: 3, sad: 2 };
@@ -393,12 +394,12 @@ export default function DoctorDashboard() {
               </div>
               <div className="doc-summary-item">
                 <span className="doc-summary-label">Memories</span>
-                <span className="doc-summary-val">{details.photoCount}</span>
+                <span className="doc-summary-val">{details.photoCount ?? <span title="The patient has not shared photos with you" style={{ color: 'var(--ink-3)', fontWeight: 400 }}>Not shared</span>}</span>
               </div>
             </div>
 
             <div className="doc-detail-tabs">
-              {['appointments', 'medications', 'mmse', 'mood', 'notes'].map(tab => (
+              {['appointments', 'medications', 'mmse', 'mood', 'notes', 'team'].map(tab => (
                 <button
                   key={tab}
                   className={`doc-detail-tab ${activeDetailTab === tab ? 'doc-detail-tab--active' : ''}`}
@@ -409,6 +410,7 @@ export default function DoctorDashboard() {
                   {tab === 'mmse' && 'MMSE scores'}
                   {tab === 'mood' && 'Mood history'}
                   {tab === 'notes' && 'Care notes'}
+                  {tab === 'team' && 'Care team & consent'}
                 </button>
               ))}
             </div>
@@ -631,6 +633,10 @@ export default function DoctorDashboard() {
             )}
 
             {/* CARE NOTES — read-only */}
+            {activeDetailTab === 'team' && (
+              <CareTeamConsent patientId={selectedPatient.id} details={details} onSaved={refreshDetails} />
+            )}
+
             {activeDetailTab === 'notes' && (
               <div className="doc-section">
                 <div className="doc-section-header">

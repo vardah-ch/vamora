@@ -1,6 +1,6 @@
 # Roadmap and Resume Notes
 
-Status as of 2026-11-13, branch `research-hardening` (baseline: tag `pre-research-baseline` = `fce8614`).
+Status as of 2026-11-16, branch `research-hardening` (baseline: tag `pre-research-baseline` = `fce8614`).
 
 ## Done
 | Priority | Item | Evidence |
@@ -18,15 +18,17 @@ Status as of 2026-11-13, branch `research-hardening` (baseline: tag `pre-researc
 | P3 | Non-diagnostic observation summaries | mood tests |
 | P3 | Documentation package | `docs/` |
 | — | Seeders made runnable (B2) and demo care-team seeder added | fresh-DB seed run |
+| P2 | Admin UI: audit-log tab (filter by outcome) and doctor-assignment form | browser check |
+| P2 | Doctor UI: care team with permissions, consent mode (self / supported / representative with documented basis), 30-day observation summary | browser check, consent tests |
+| P2 | Serverless deployment path (Vercel), database media storage, demo mode | `test/mediaStore.test.js`, local production rehearsal, `docs/DEPLOYMENT.md` |
+| P2 | CI: GitHub Actions runs backend tests and frontend build on every push | `.github/workflows/ci.yml` |
 
 ## Remaining (in priority order)
 1. **Run the LLM companion evaluation**: `GROQ_API_KEY=… node eval/runCompanionEval.js` on both collections; then human rating (TESTING_AND_EVALUATION.md §4).
-2. **Move the browser workflow test into the repository** (`frontend/e2e/` with `playwright-core` as a dev dependency, plus a script that starts the servers) and add CI (GitHub Actions: `npm test` + build + lint).
+2. **Move the browser workflow test into the repository** (`frontend/e2e/` with `playwright-core` as a dev dependency, plus a script that starts the servers) and add it and lint to CI.
 3. **Caregiver and doctor UI**:
    - a caregiver Memory Book editor (the API exists);
-   - a doctor UI for consent mode and the care-team list (the API exists);
-   - show the observation summary in the dashboards (the API exists).
-4. **Super-admin UI**: audit-log tab and doctor-assignment form (APIs exist).
+   - show the observation summary in the caregiver dashboard (the API exists).
 5. **Security**: httpOnly cookie sessions with CSRF protection; MFA for clinicians and admins; email transport for password reset; a documented, verified erasure procedure.
 6. **Romanised Urdu**: transliteration or normalisation, a caregiver-sourced lexicon, an Urdu-script test collection.
 7. **Independent test collection** written by caregivers or clinicians (fictional personas), double-annotated.

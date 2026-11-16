@@ -69,3 +69,17 @@
 .sa-empty { color: var(--ink-3); text-align: center; padding: 30px; }
 .sa-loading { display: grid; place-items: center; padding: 40px; color: var(--ink-3); }
 .sa-spinner { width: 30px; height: 30px; border: 3px solid var(--line); border-top-color: var(--primary); border-radius: 50%; animation: v-spin 0.9s linear infinite; }
+
+/* Audit log & assignment panels */
+.sa-hint { display: flex; gap: 8px; align-items: flex-start; color: var(--ink-2); margin: -4px 0 16px; max-width: 820px; }
+.sa-hint svg { flex-shrink: 0; margin-top: 4px; color: var(--primary); }
+.sa-chipbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 14px; }
+.sa-chip { height: 38px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); font-weight: 700; cursor: pointer; transition: background 0.2s, color 0.2s, border-color 0.2s; }
+.sa-chip:hover { border-color: var(--ink-3); }
+.sa-chip--on { background: var(--ink); border-color: var(--ink); color: #fff; }
+.sa-denied-note { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; color: var(--danger); font-weight: 700; }
+.sa-sub { color: var(--ink-3); font-weight: 400; }
+.sa-outcome { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 0.82rem; font-weight: 700; text-transform: capitalize; }
+.sa-outcome--allowed { background: var(--ok-50); color: var(--ok); }
+.sa-outcome--denied { background: var(--danger-50); color: var(--danger); }
+.sa-outcome--error { background: var(--warn-50); color: var(--warn); }

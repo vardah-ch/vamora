@@ -7,7 +7,9 @@ import {
   Plus, Eye, EyeOff, LogOut, X, CheckCircle
 } from 'lucide-react';
 import './SuperAdminDashboard.css';
-import { UserRound, HeartHandshake, Stethoscope } from 'lucide-react';
+import AuditLogPanel from '../components/admin/AuditLogPanel';
+import AssignDoctorPanel from '../components/admin/AssignDoctorPanel';
+import { UserRound, HeartHandshake, Stethoscope, History, Link2 } from 'lucide-react';
 
 const roleBadgeStyle = (role) => {
   const map = {
@@ -45,6 +47,8 @@ const TABS = [
   { key: 'logs',       label: 'Logs',              Icon: FileText },
   { key: 'doctors',    label: 'Doctor Access',     Icon: Shield   },
   { key: 'caregivers', label: 'Caregiver Access',  Icon: Users    },
+  { key: 'assign',     label: 'Assign Doctor',     Icon: Link2    },
+  { key: 'audit',      label: 'Audit Log',         Icon: History  },
 ];
 
 const BLANK_FORM = {
@@ -232,6 +236,9 @@ const SuperAdminDashboard = () => {
         </div>
 
         {/* ══ CREATE USER ══ */}
+        {activeTab === 'audit' && <AuditLogPanel />}
+        {activeTab === 'assign' && <AssignDoctorPanel />}
+
         {activeTab === 'create' && (
           <div className="sa-section">
             <h2 className="sa-section-title">Create New User</h2>

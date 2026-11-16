@@ -35,7 +35,7 @@ function caregiversOnTeam(patientUserId) {
     where: { patientUserId, status: { [Op.in]: ['active', 'pending'] } },
     include: [{ model: db.User, as: 'grantee', attributes: ['id', 'email', 'role'], include: [{ model: db.Caregiver, as: 'caregiverProfile', attributes: ['id', 'name', 'phone'] }] }]
   }).then(gs => gs.filter(g => g.grantee?.role === 'caregiver').map(g => ({
-    id: g.grantee.caregiverProfile?.id, userId: g.grantee.id, name: g.grantee.caregiverProfile?.name, phone: g.grantee.caregiverProfile?.phone,
+    id: g.grantee.caregiverProfile?.id, userId: g.grantee.id, email: g.grantee.email, name: g.grantee.caregiverProfile?.name, phone: g.grantee.caregiverProfile?.phone,
     grantStatus: g.status, permissions: ac.sanitizePermissions(g.permissions, 'caregiver'), basis: g.basis, isRepresentative: false
   })));
 }
