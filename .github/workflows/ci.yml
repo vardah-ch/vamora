@@ -13,13 +13,12 @@ jobs:
       run:
         working-directory: backend
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
-          cache: npm
-          cache-dependency-path: backend/package-lock.json
-      - run: npm ci
+      # backend/package-lock.json is not committed (backend/.gitignore), so install from package.json.
+      - run: npm install --no-audit --no-fund
       # Throw-away PostgreSQL 16 started by the test setup; no secrets or services needed.
       - run: npm test
         env:
@@ -32,8 +31,8 @@ jobs:
       run:
         working-directory: frontend
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
